@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import { useSearchParams } from "next/navigation";
 import { ethers } from "ethers";
@@ -12,32 +12,39 @@ import { getReadonlyProvider, getSigner } from "@/lib/providers";
 import { useTranslation } from "@/lib/i18n";
 import { CurrencyConverter } from "@/components/currency-converter";
 import {
-  DoubleColorPicker,
-  type DoubleColorConfirmPayload,
-  type BetType,
-} from "@/components/double-color-picker";
+  LotteryPicker,
+  type LotteryConfirmPayload,
+} from "@/components/lottery-picker";
 import {
   SINGLE_TICKET_USD,
   SINGLE_TICKET_USD_FORMATTED,
 } from "@/lib/pricing";
+import {
+  LOTTERY_GAMES,
+  LOTTERY_GAME_MAP,
+  type LotteryGameDefinition,
+  type LotteryGameId,
+  type LotteryModeDefinition,
+  type LotterySelection,
+} from "@/lib/lottery-games";
 
 type PreviewTicket = {
   id: string;
-  red: number[];
-  blue: number[];
+  selections: LotterySelection;
 };
 
 type ConfirmedBatch = {
   id: string;
-  betType: BetType;
-  mode: DoubleColorConfirmPayload["mode"];
-  redBalls: number[];
-  blueBalls: number[];
+  gameId: LotteryGameId;
+  modeId: string;
+  selections: LotterySelection;
   combinations: number;
   preview: PreviewTicket[];
 };
 
 const PREVIEW_LIMIT_PER_BATCH = 12;
+const DEFAULT_GAME_ID =
+  (LOTTERY_GAMES[0]?.id as LotteryGameId | undefined) ?? "lottoMax";
 
 export default function PurchasePage() {
   const searchParams = useSearchParams();
@@ -51,6 +58,13 @@ export default function PurchasePage() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [batches, setBatches] = useState<ConfirmedBatch[]>([]);
+  const [selectedGameId, setSelectedGameId] =
+    useState<LotteryGameId>(DEFAULT_GAME_ID);
+
+  const selectedGame =
+    LOTTERY_GAME_MAP[selectedGameId] ??
+    LOTTERY_GAME_MAP[DEFAULT_GAME_ID] ??
+    LOTTERY_GAMES[0];
 
   const totalCombinations = useMemo(
     () => batches.reduce((sum, batch) => sum + batch.combinations, 0),
@@ -63,16 +77,31 @@ export default function PurchasePage() {
   }, [totalCombinations]);
 
   const handleSelectionConfirm = useCallback(
-    (payload: DoubleColorConfirmPayload) => {
+    (payload: LotteryConfirmPayload) => {
       const batchId =
         typeof crypto !== "undefined" && "randomUUID" in crypto
           ? crypto.randomUUID()
           : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
+      const game = LOTTERY_GAME_MAP[payload.gameId];
+      if (!game) {
+        console.warn("Unknown lottery game:", payload.gameId);
+        return;
+      }
+
+      const mode =
+        game.modes.find((item) => item.id === payload.modeId) ??
+        game.modes[0];
+
+      const normalizedSelections = normalizeSelections(
+        game,
+        payload.selections
+      );
+
       const previewCombos = generatePreviewCombos(
-        payload.betType,
-        payload.redBalls,
-        payload.blueBalls,
+        game,
+        mode,
+        normalizedSelections,
         Math.max(
           1,
           Math.min(payload.combinations, PREVIEW_LIMIT_PER_BATCH)
@@ -82,9 +111,11 @@ export default function PurchasePage() {
       const preview = previewCombos.map((combo, index) => {
         const hash = hashString(`${batchId}:${index}`);
         return {
-          id: `SSQ-${hash.toString(36).toUpperCase().padStart(6, "0")}`,
-          red: combo.red,
-          blue: combo.blue,
+          id: `${game.ticketPrefix}-${hash
+            .toString(36)
+            .toUpperCase()
+            .padStart(6, "0")}`,
+          selections: combo,
         };
       });
 
@@ -92,10 +123,9 @@ export default function PurchasePage() {
         ...previous,
         {
           id: batchId,
-          betType: payload.betType,
-          mode: payload.mode,
-          redBalls: payload.redBalls.slice().sort((a, b) => a - b),
-          blueBalls: payload.blueBalls.slice().sort((a, b) => a - b),
+          gameId: game.id,
+          modeId: mode.id,
+          selections: normalizedSelections,
           combinations: payload.combinations,
           preview,
         },
@@ -108,6 +138,11 @@ export default function PurchasePage() {
 
   const handleRemoveBatch = useCallback((batchId: string) => {
     setBatches((previous) => previous.filter((batch) => batch.id !== batchId));
+    setFeedback(null);
+  }, []);
+
+  const handleClearAllBatches = useCallback(() => {
+    setBatches([]);
     setFeedback(null);
   }, []);
 
@@ -211,7 +246,17 @@ export default function PurchasePage() {
       </header>
 
       <CurrencyConverter />
-      <DoubleColorPicker onConfirm={handleSelectionConfirm} />
+
+      <div className="grid gap-6 lg:grid-cols-[240px,1fr]">
+        <GameSelector
+          games={LOTTERY_GAMES}
+          selectedGameId={selectedGameId}
+          onSelect={(id) => setSelectedGameId(id)}
+        />
+        {selectedGame ? (
+          <LotteryPicker game={selectedGame} onConfirm={handleSelectionConfirm} />
+        ) : null}
+      </div>
 
       <form
         onSubmit={handleSubmit}
@@ -266,15 +311,25 @@ export default function PurchasePage() {
           />
         )}
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isSubmitting
-            ? t("purchase.form.submitting")
-            : t("purchase.form.submit")}
-        </button>
+        <div className="flex flex-wrap justify-end gap-3">
+          <button
+            type="button"
+            onClick={handleClearAllBatches}
+            disabled={batches.length === 0}
+            className="inline-flex items-center justify-center rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-semibold text-indigo-100 transition hover:border-indigo-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {t("purchase.preview.clearAll")}
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting
+              ? t("purchase.form.submitting")
+              : t("purchase.form.submit")}
+          </button>
+        </div>
 
         <p className="text-xs text-slate-500">
           {t("purchase.form.info")}
@@ -302,6 +357,105 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
   );
 }
 
+function GameSelector({
+  games,
+  selectedGameId,
+  onSelect,
+}: {
+  games: LotteryGameDefinition[];
+  selectedGameId: LotteryGameId;
+  onSelect: (id: LotteryGameId) => void;
+}) {
+  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedGame = useMemo(
+    () => games.find((game) => game.id === selectedGameId) ?? null,
+    [games, selectedGameId]
+  );
+
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, []);
+
+  const handleSelect = (id: LotteryGameId) => {
+    onSelect(id);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="space-y-2" ref={containerRef}>
+      <label className="text-xs font-semibold uppercase text-slate-400">
+        {t("purchase.games.selectorTitle")}
+      </label>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setIsOpen((previous) => !previous)}
+          className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-left text-sm font-semibold text-slate-100 transition hover:border-indigo-400/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+        >
+          <span>
+            {selectedGame
+              ? t(selectedGame.nameKey)
+              : t("purchase.games.selectorPlaceholder")}
+          </span>
+          <span className="text-xs text-slate-400">
+            {isOpen ? "▲" : "▼"}
+          </span>
+        </button>
+
+        {isOpen && (
+          <ul
+            role="listbox"
+            className="absolute left-0 right-0 z-20 mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-slate-950/95 shadow-xl backdrop-blur"
+          >
+            {games.map((game) => {
+              const active = game.id === selectedGameId;
+              return (
+                <li key={game.id}>
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(game.id)}
+                    role="option"
+                    aria-selected={active}
+                    className={`flex w-full items-center justify-between px-4 py-3 text-sm transition ${
+                      active
+                        ? "bg-indigo-500/30 text-indigo-100"
+                        : "text-slate-200 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <span>{t(game.nameKey)}</span>
+                    {active && (
+                      <span className="text-xs uppercase text-indigo-200">
+                        {t("purchase.games.selected")}
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function TicketPreview({
   batches,
   total,
@@ -321,88 +475,110 @@ function TicketPreview({
     <div className="space-y-4 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 text-sm text-slate-200">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-white">
-          {t("purchase.mode.ticketPreviewTitle")}
+          {t("purchase.games.preview.title")}
         </h3>
         <span className="text-xs text-slate-400">
-          {t("purchase.mode.totalTickets", { count: total })}
+          {t("purchase.games.totalTickets", { count: total })}
         </span>
       </div>
       <p className="text-xs text-slate-400">
-        {t("purchase.mode.ticketPreviewDescription")}
+        {t("purchase.games.preview.description")}
       </p>
 
       <div className="space-y-4">
-        {batches.map((batch, index) => (
-          <div
-            key={batch.id}
-            className="rounded-2xl border border-white/10 bg-white/5 p-4"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <p className="text-sm font-semibold text-white">
-                  {t("purchase.preview.groupLabel", { index: index + 1 })}
-                </p>
-                <p className="text-xs text-slate-400">
-                  {t("purchase.mode.totalTickets", {
-                    count: batch.combinations,
-                  })}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => onRemove(batch.id)}
-                className="rounded-full border border-indigo-400/40 px-3 py-1 text-xs font-semibold text-indigo-100 transition hover:border-indigo-300 hover:text-white"
-              >
-                {t("purchase.preview.remove")}
-              </button>
-            </div>
+        {batches.map((batch, index) => {
+          const game = LOTTERY_GAME_MAP[batch.gameId];
+          if (!game) {
+            return null;
+          }
+          const mode =
+            game.modes.find((item) => item.id === batch.modeId) ??
+            game.modes[0];
 
-            <div className="mt-3 space-y-1 text-[11px] text-slate-200">
-              <div>
-                <span className="font-semibold text-rose-200">R:</span>{" "}
-                {formatNumbers(batch.redBalls)}
-              </div>
-              <div>
-                <span className="font-semibold text-sky-200">B:</span>{" "}
-                {formatNumbers(batch.blueBalls)}
-              </div>
-            </div>
-
-            {batch.preview.length > 0 && (
-              <>
-                <p className="mt-3 text-[11px] uppercase tracking-wide text-slate-500">
-                  {t("purchase.preview.samples")}
-                </p>
-                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-                  {batch.preview.map((ticket) => (
-                    <div
-                      key={ticket.id}
-                      className="space-y-2 rounded-lg border border-indigo-400/40 bg-indigo-500/10 px-3 py-2 font-mono text-xs text-indigo-100"
-                    >
-                      <div className="text-indigo-200">{ticket.id}</div>
-                      <div className="text-[10px] leading-tight text-indigo-100">
-                        <span className="font-semibold text-rose-200">R:</span>{" "}
-                        {formatNumbers(ticket.red)}
-                      </div>
-                      <div className="text-[10px] leading-tight text-sky-100">
-                        <span className="font-semibold text-sky-200">B:</span>{" "}
-                        {formatNumbers(ticket.blue)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {batch.combinations > batch.preview.length && (
-                  <p className="mt-2 text-xs text-slate-500">
-                    {t("purchase.mode.ticketPreviewOverflow", {
-                      count: batch.preview.length,
-                      total: batch.combinations,
+          return (
+            <div
+              key={batch.id}
+              className="rounded-2xl border border-white/10 bg-white/5 p-4"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold text-white">
+                    {t("purchase.preview.groupLabel", { index: index + 1 })}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {t(game.nameKey)} · {t(mode.labelKey)}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {t("purchase.games.totalTickets", {
+                      count: batch.combinations,
                     })}
                   </p>
-                )}
-              </>
-            )}
-          </div>
-        ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onRemove(batch.id)}
+                  className="rounded-full border border-indigo-400/40 px-3 py-1 text-xs font-semibold text-indigo-100 transition hover:border-indigo-300 hover:text-white"
+                >
+                  {t("purchase.preview.remove")}
+                </button>
+              </div>
+
+              <div className="mt-3 space-y-1 text-[11px] text-slate-200">
+                {game.pools.map((pool) => (
+                  <div key={pool.id}>
+                    <span className="font-semibold text-indigo-200">
+                      {t(pool.labelKey)}:
+                    </span>{" "}
+                    {formatNumbers(
+                      batch.selections[pool.id] ?? [],
+                      pool.padTo ?? 2
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {batch.preview.length > 0 && (
+                <>
+                  <p className="mt-3 text-[11px] uppercase tracking-wide text-slate-500">
+                    {t("purchase.preview.samples")}
+                  </p>
+                  <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                    {batch.preview.map((ticket) => (
+                      <div
+                        key={ticket.id}
+                        className="space-y-2 rounded-lg border border-indigo-400/40 bg-indigo-500/10 px-3 py-2 font-mono text-xs text-indigo-100"
+                      >
+                        <div className="text-indigo-200">{ticket.id}</div>
+                        {game.pools.map((pool) => (
+                          <div
+                            key={pool.id}
+                            className="text-[10px] leading-tight text-indigo-100"
+                          >
+                            <span className="font-semibold text-indigo-200">
+                              {t(pool.labelKey)}:
+                            </span>{" "}
+                            {formatNumbers(
+                              ticket.selections[pool.id] ?? [],
+                              pool.padTo ?? 2
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  {batch.combinations > batch.preview.length && (
+                    <p className="mt-2 text-xs text-slate-500">
+                      {t("purchase.games.preview.overflow", {
+                        count: batch.preview.length,
+                        total: batch.combinations,
+                      })}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -418,69 +594,63 @@ function hashString(input: string) {
   return Math.abs(hash);
 }
 
-type PreviewCombo = {
-  red: number[];
-  blue: number[];
-};
-
 function generatePreviewCombos(
-  betType: BetType,
-  redBalls: number[],
-  blueBalls: number[],
+  game: LotteryGameDefinition,
+  mode: LotteryModeDefinition,
+  selections: LotterySelection,
   limit: number
 ) {
-  const results: PreviewCombo[] = [];
+  const results: LotterySelection[] = [];
 
-  const pushCombo = (red: number[], blue: number[]) => {
-    if (results.length < limit) {
-      results.push({
-        red: [...red].sort((a, b) => a - b),
-        blue: [...blue].sort((a, b) => a - b),
+  function backtrack(index: number, current: LotterySelection) {
+    if (results.length >= limit) return;
+    if (index >= game.pools.length) {
+      results.push(
+        Object.fromEntries(
+          Object.entries(current).map(([poolId, values]) => [
+            poolId,
+            [...values].sort((a, b) => a - b),
+          ])
+        )
+      );
+      return;
+    }
+
+    const pool = game.pools[index];
+    const requirement = mode.poolRequirements[pool.id];
+    if (!requirement) {
+      backtrack(index + 1, current);
+      return;
+    }
+
+    const selected = selections[pool.id] ?? [];
+    const choose = requirement.min;
+    if (selected.length < choose) {
+      return;
+    }
+
+    const combosIterable =
+      selected.length === choose
+        ? [selected]
+        : combinationIterator(selected, choose);
+
+    for (const combo of combosIterable) {
+      if (results.length >= limit) break;
+      backtrack(index + 1, {
+        ...current,
+        [pool.id]: [...combo].sort((a, b) => a - b),
       });
-    }
-  };
-
-  const redValues = [...redBalls].sort((a, b) => a - b);
-  const blueValues = [...blueBalls].sort((a, b) => a - b);
-
-  switch (betType) {
-    case "single": {
-      pushCombo(redValues.slice(0, 6), blueValues.slice(0, 1));
-      break;
-    }
-    case "redMulti": {
-      const iterator = combinationIterator(redValues, 6);
-      const blue = blueValues.slice(0, 1);
-      for (const combo of iterator) {
-        pushCombo(combo, blue);
-        if (results.length >= limit) break;
-      }
-      break;
-    }
-    case "blueMulti": {
-      const red = redValues.slice(0, 6);
-      for (const combo of combinationIterator(blueValues, 1)) {
-        pushCombo(red, combo);
-        if (results.length >= limit) break;
-      }
-      break;
-    }
-    case "fullMulti": {
-      for (const redCombo of combinationIterator(redValues, 6)) {
-        for (const blueCombo of combinationIterator(blueValues, 1)) {
-          pushCombo(redCombo, blueCombo);
-          if (results.length >= limit) break;
-        }
-        if (results.length >= limit) break;
-      }
-      break;
     }
   }
 
+  backtrack(0, {});
   return results;
 }
 
-function* combinationIterator(values: number[], choose: number) {
+function* combinationIterator(
+  values: number[],
+  choose: number
+): Generator<number[]> {
   const combination: number[] = [];
 
   function* backtrack(start: number, k: number): Generator<number[]> {
@@ -499,8 +669,17 @@ function* combinationIterator(values: number[], choose: number) {
   yield* backtrack(0, choose);
 }
 
-function formatNumbers(numbers: number[]) {
-  return numbers
-    .map((number) => number.toString().padStart(2, "0"))
-    .join(" ");
+function normalizeSelections(
+  game: LotteryGameDefinition,
+  selections: LotterySelection
+): LotterySelection {
+  return game.pools.reduce<LotterySelection>((accumulator, pool) => {
+    const values = selections[pool.id] ?? [];
+    accumulator[pool.id] = [...values].sort((a, b) => a - b);
+    return accumulator;
+  }, {});
+}
+
+function formatNumbers(numbers: number[], padTo = 2) {
+  return numbers.map((number) => number.toString().padStart(padTo, "0")).join(" ");
 }

@@ -144,69 +144,226 @@ const translations: TranslationDictionary = {
     "wallet.connect": "Connect Wallet",
     "wallet.disconnect": "Disconnect",
     "wallet.unknownChain": "Unknown",
-    "purchase.mode.sectionTitle": "Double Color Ball Options",
-    "purchase.mode.description":
-      "Pick ticket style inspired by the Double Color Ball (双色球). Choose how you want to select numbers, then confirm your combination before purchase.",
-    "purchase.mode.manual": "Manual pick",
-    "purchase.mode.random": "Auto pick",
-    "purchase.mode.single": "Single entry",
-    "purchase.mode.redMulti": "Red ball multi",
-    "purchase.mode.blueMulti": "Blue ball multi",
-    "purchase.mode.fullMulti": "Full multi",
-    "purchase.mode.rules.manual":
-      "Manual pick lets you choose each number yourself.",
-    "purchase.mode.rules.random":
-      "Auto pick asks the system to generate a combination for you.",
-    "purchase.mode.rules.single":
-      "Select exactly 6 red balls (1-33) and 1 blue ball (1-16).",
-    "purchase.mode.rules.redMulti":
-      "Select 7-20 red balls and 1 blue ball to cover multiple entries.",
-    "purchase.mode.rules.blueMulti":
-      "Select 6 red balls and 2-16 blue balls.",
-    "purchase.mode.rules.fullMulti":
-      "Select 7-20 red balls and 2-16 blue balls.",
-    "purchase.mode.redCount": "{count} red balls selected",
-    "purchase.mode.blueCount": "{count} blue balls selected",
-    "purchase.mode.randomize": "Shuffle numbers",
-    "purchase.mode.clear": "Clear selection",
-    "purchase.mode.totalCombos": "Total combinations",
-    "purchase.mode.totalTickets": "{count} tickets",
-    "purchase.mode.ticketPreviewTitle": "Generated ticket IDs",
-    "purchase.mode.ticketPreviewDescription":
-      "Share or bookmark these virtual ticket IDs for your records. IDs refresh whenever you adjust the balls.",
-    "purchase.mode.ticketPreviewOverflow":
+    "purchase.games.selectionStyle": "Selection style",
+    "purchase.games.manual": "Manual pick",
+    "purchase.games.random": "Auto pick",
+    "purchase.games.randomize": "Shuffle numbers",
+    "purchase.games.clear": "Clear selection",
+    "purchase.games.manualHelper":
+      "Choose each number yourself. Requirements depend on the active play.",
+    "purchase.games.randomHelper":
+      "Auto pick generates a valid combination for the selected play.",
+    "purchase.games.totalCombos": "Total combinations",
+    "purchase.games.totalTickets": "{count} tickets",
+    "purchase.games.confirm": "Confirm selection",
+    "purchase.games.selectedExact": "{count} selected / {required} required",
+    "purchase.games.selectedRange":
+      "{count} selected (target {min}-{max})",
+    "purchase.games.selectorTitle": "Lottery games",
+    "purchase.games.selectorPlaceholder": "Select a lottery game",
+    "purchase.games.selected": "Selected",
+    "purchase.games.preview.title": "Generated ticket IDs",
+    "purchase.games.preview.description":
+      "Share or bookmark these virtual ticket IDs for your records. IDs refresh whenever you adjust the numbers.",
+    "purchase.games.preview.overflow":
       "Showing first {count} tickets out of {total}.",
-    "purchase.mode.error.red.single": "Single entry requires 6 red balls.",
-    "purchase.mode.error.blue.single": "Single entry requires 1 blue ball.",
-    "purchase.mode.error.red.redMulti":
-      "Red multi requires 7-20 red balls and 1 blue ball.",
-    "purchase.mode.error.blue.redMulti":
-      "Red multi requires exactly 1 blue ball.",
-    "purchase.mode.error.red.blueMulti":
-      "Blue multi requires exactly 6 red balls.",
-    "purchase.mode.error.blue.blueMulti":
-      "Blue multi requires 2-16 blue balls.",
-    "purchase.mode.error.red.fullMulti":
-      "Full multi requires 7-20 red balls.",
-    "purchase.mode.error.blue.fullMulti":
-      "Full multi requires 2-16 blue balls.",
-    "purchase.mode.error.invalidSelection":
-      "Pick a valid combination before submitting.",
-    "purchase.mode.overlay.title": "Select your balls",
-    "purchase.mode.column.red": "Red Balls",
-    "purchase.mode.column.blue": "Blue Balls",
-    "purchase.mode.hint":
-      "Tap to toggle numbers. Hover to see requirements. Auto pick will respect the rules for each mode.",
+    "purchase.games.lottoMax.name": "LOTTO MAX",
+    "purchase.games.lottoMax.description":
+      "Play Canada's biggest jackpot game with 7-number picks or combo packs.",
+    "purchase.games.lottoMax.hint":
+      "Tap numbers to toggle. Combo plays expand into every eligible 7-number ticket automatically.",
+    "purchase.games.lottoMax.pools.main": "Main numbers",
+    "purchase.games.lottoMax.modes.standard.label":
+      "Standard play (Pick 7)",
+    "purchase.games.lottoMax.modes.standard.helper":
+      "Choose exactly 7 numbers from 1-50.",
+    "purchase.games.lottoMax.modes.standard.error.main":
+      "Select exactly 7 numbers.",
+    "purchase.games.lottoMax.modes.combo8.label": "Combo 8",
+    "purchase.games.lottoMax.modes.combo8.helper":
+      "Pick 8 numbers to generate 8 tickets.",
+    "purchase.games.lottoMax.modes.combo8.error.main":
+      "Select exactly 8 numbers.",
+    "purchase.games.lottoMax.modes.combo9.label": "Combo 9",
+    "purchase.games.lottoMax.modes.combo9.helper":
+      "Pick 9 numbers to generate 36 tickets.",
+    "purchase.games.lottoMax.modes.combo9.error.main":
+      "Select exactly 9 numbers.",
+    "purchase.games.lottoMax.modes.combo10.label": "Combo 10",
+    "purchase.games.lottoMax.modes.combo10.helper":
+      "Pick 10 numbers to generate 120 tickets.",
+    "purchase.games.lottoMax.modes.combo10.error.main":
+      "Select exactly 10 numbers.",
+    "purchase.games.lotto649.name": "LOTTO 6/49",
+    "purchase.games.lotto649.description":
+      "Canada's classic 6-number draw with optional combo plays.",
+    "purchase.games.lotto649.hint":
+      "Choose your numbers from 1-49. Combo entries expand into all 6-number tickets automatically.",
+    "purchase.games.lotto649.pools.main": "Main numbers",
+    "purchase.games.lotto649.modes.standard.label":
+      "Standard play (Pick 6)",
+    "purchase.games.lotto649.modes.standard.helper":
+      "Choose exactly 6 numbers from 1-49.",
+    "purchase.games.lotto649.modes.standard.error.main":
+      "Select exactly 6 numbers.",
+    "purchase.games.lotto649.modes.combo7.label": "Combo 7",
+    "purchase.games.lotto649.modes.combo7.helper":
+      "Pick 7 numbers to generate 7 tickets.",
+    "purchase.games.lotto649.modes.combo7.error.main":
+      "Select exactly 7 numbers.",
+    "purchase.games.lotto649.modes.combo8.label": "Combo 8",
+    "purchase.games.lotto649.modes.combo8.helper":
+      "Pick 8 numbers to generate 28 tickets.",
+    "purchase.games.lotto649.modes.combo8.error.main":
+      "Select exactly 8 numbers.",
+    "purchase.games.lotto649.modes.combo9.label": "Combo 9",
+    "purchase.games.lotto649.modes.combo9.helper":
+      "Pick 9 numbers to generate 84 tickets.",
+    "purchase.games.lotto649.modes.combo9.error.main":
+      "Select exactly 9 numbers.",
+    "purchase.games.ontario49.name": "Ontario 49",
+    "purchase.games.ontario49.description":
+      "Provincial 6-number draw with multi-number combo options.",
+    "purchase.games.ontario49.hint":
+      "Tap to toggle numbers from 1-49. Combo entries expand into every 6-number ticket.",
+    "purchase.games.ontario49.pools.main": "Main numbers",
+    "purchase.games.ontario49.modes.standard.label":
+      "Standard play (Pick 6)",
+    "purchase.games.ontario49.modes.standard.helper":
+      "Choose exactly 6 numbers.",
+    "purchase.games.ontario49.modes.standard.error.main":
+      "Select exactly 6 numbers.",
+    "purchase.games.ontario49.modes.combo7.label": "Combo 7",
+    "purchase.games.ontario49.modes.combo7.helper":
+      "Pick 7 numbers to generate 7 tickets.",
+    "purchase.games.ontario49.modes.combo7.error.main":
+      "Select exactly 7 numbers.",
+    "purchase.games.dailyGrand.name": "Daily Grand",
+    "purchase.games.dailyGrand.description":
+      "Pick five numbers plus a Grand Number for a chance at $1,000 a day for life.",
+    "purchase.games.dailyGrand.hint":
+      "Choose five numbers from 1-49 and one Grand Number from 1-7.",
+    "purchase.games.dailyGrand.pools.main": "Main numbers",
+    "purchase.games.dailyGrand.pools.grand": "Grand Number",
+    "purchase.games.dailyGrand.modes.standard.label": "Standard play",
+    "purchase.games.dailyGrand.modes.standard.helper":
+      "Pick 5 main numbers (1-49) and 1 Grand Number (1-7).",
+    "purchase.games.dailyGrand.modes.standard.error.main":
+      "Select exactly 5 main numbers.",
+    "purchase.games.dailyGrand.modes.standard.error.grand":
+      "Select exactly 1 Grand Number.",
+    "purchase.games.lightningLotto.name": "Lightning Lotto",
+    "purchase.games.lightningLotto.description":
+      "Fast-paced jackpot with five numbers drawn instantly.",
+    "purchase.games.lightningLotto.hint":
+      "Choose five unique numbers from 1-49.",
+    "purchase.games.lightningLotto.pools.main": "Main numbers",
+    "purchase.games.lightningLotto.modes.standard.label": "Standard play",
+    "purchase.games.lightningLotto.modes.standard.helper":
+      "Pick exactly 5 numbers from 1-49.",
+    "purchase.games.lightningLotto.modes.standard.error.main":
+      "Select exactly 5 numbers.",
+    "purchase.games.lottario.name": "Lottario",
+    "purchase.games.lottario.description":
+      "Ontario's Saturday draw featuring 6-number tickets and combo options.",
+    "purchase.games.lottario.hint":
+      "Tap numbers from 1-45. Combo plays expand into every 6-number ticket.",
+    "purchase.games.lottario.pools.main": "Main numbers",
+    "purchase.games.lottario.modes.standard.label":
+      "Standard play (Pick 6)",
+    "purchase.games.lottario.modes.standard.helper":
+      "Choose exactly 6 numbers from 1-45.",
+    "purchase.games.lottario.modes.standard.error.main":
+      "Select exactly 6 numbers.",
+    "purchase.games.lottario.modes.combo7.label": "Combo 7",
+    "purchase.games.lottario.modes.combo7.helper":
+      "Pick 7 numbers to generate 7 tickets.",
+    "purchase.games.lottario.modes.combo7.error.main":
+      "Select exactly 7 numbers.",
+    "purchase.games.dailyKeno.name": "Daily Keno",
+    "purchase.games.dailyKeno.description":
+      "Pick your favourite Keno spot from 2 to 10 numbers.",
+    "purchase.games.dailyKeno.hint":
+      "Choose the spot size first, then select numbers from 1-70.",
+    "purchase.games.dailyKeno.pools.main": "Main numbers",
+    "purchase.games.dailyKeno.modes.spot2.label": "Spot 2",
+    "purchase.games.dailyKeno.modes.spot2.helper":
+      "Select exactly 2 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot2.error.main":
+      "Select exactly 2 numbers.",
+    "purchase.games.dailyKeno.modes.spot3.label": "Spot 3",
+    "purchase.games.dailyKeno.modes.spot3.helper":
+      "Select exactly 3 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot3.error.main":
+      "Select exactly 3 numbers.",
+    "purchase.games.dailyKeno.modes.spot4.label": "Spot 4",
+    "purchase.games.dailyKeno.modes.spot4.helper":
+      "Select exactly 4 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot4.error.main":
+      "Select exactly 4 numbers.",
+    "purchase.games.dailyKeno.modes.spot5.label": "Spot 5",
+    "purchase.games.dailyKeno.modes.spot5.helper":
+      "Select exactly 5 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot5.error.main":
+      "Select exactly 5 numbers.",
+    "purchase.games.dailyKeno.modes.spot6.label": "Spot 6",
+    "purchase.games.dailyKeno.modes.spot6.helper":
+      "Select exactly 6 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot6.error.main":
+      "Select exactly 6 numbers.",
+    "purchase.games.dailyKeno.modes.spot7.label": "Spot 7",
+    "purchase.games.dailyKeno.modes.spot7.helper":
+      "Select exactly 7 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot7.error.main":
+      "Select exactly 7 numbers.",
+    "purchase.games.dailyKeno.modes.spot8.label": "Spot 8",
+    "purchase.games.dailyKeno.modes.spot8.helper":
+      "Select exactly 8 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot8.error.main":
+      "Select exactly 8 numbers.",
+    "purchase.games.dailyKeno.modes.spot9.label": "Spot 9",
+    "purchase.games.dailyKeno.modes.spot9.helper":
+      "Select exactly 9 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot9.error.main":
+      "Select exactly 9 numbers.",
+    "purchase.games.dailyKeno.modes.spot10.label": "Spot 10",
+    "purchase.games.dailyKeno.modes.spot10.helper":
+      "Select exactly 10 numbers from 1-70.",
+    "purchase.games.dailyKeno.modes.spot10.error.main":
+      "Select exactly 10 numbers.",
+    "purchase.games.pick4.name": "Pick 4",
+    "purchase.games.pick4.description":
+      "Daily game with four drawn digits from 0-9.",
+    "purchase.games.pick4.hint":
+      "Select four digits to build your ticket set.",
+    "purchase.games.pick4.pools.digits": "Digits (0-9)",
+    "purchase.games.pick4.modes.standard.label": "Standard play",
+    "purchase.games.pick4.modes.standard.helper":
+      "Choose exactly 4 digits (0-9).",
+    "purchase.games.pick4.modes.standard.error.digits":
+      "Select exactly 4 digits.",
+    "purchase.games.pick3.name": "Pick 3",
+    "purchase.games.pick3.description":
+      "Daily game with three drawn digits from 0-9.",
+    "purchase.games.pick3.hint":
+      "Select three digits to build your ticket set.",
+    "purchase.games.pick3.pools.digits": "Digits (0-9)",
+    "purchase.games.pick3.modes.standard.label": "Standard play",
+    "purchase.games.pick3.modes.standard.helper":
+      "Choose exactly 3 digits (0-9).",
+    "purchase.games.pick3.modes.standard.error.digits":
+      "Select exactly 3 digits.",
     "purchase.summary.ticketPriceUsd": "Ticket price (USDT)",
     "purchase.summary.totalUsd": "Total cost (USDT)",
     "purchase.summary.pricePerTicketUsd": "2.00",
-    "purchase.mode.confirm": "Confirm selection",
     "purchase.feedback.noTickets":
       "Add at least one confirmed ticket before submitting.",
     "purchase.summary.groups": "Ticket groups",
     "purchase.preview.groupLabel": "Group {index}",
     "purchase.preview.remove": "Remove",
+    "purchase.preview.clearAll": "Clear all groups",
     "purchase.preview.samples": "Sample tickets",
+    "purchase.preview.numbersLabel": "Numbers",
   },
   zh: {
     "site.title": "Web3 彩票平台",
@@ -326,63 +483,215 @@ const translations: TranslationDictionary = {
     "wallet.connect": "连接钱包",
     "wallet.disconnect": "断开连接",
     "wallet.unknownChain": "未知网络",
-    "purchase.mode.sectionTitle": "双色球投注选项",
-    "purchase.mode.description":
-      "按照中国福利彩票“双色球”的玩法设计，选择自选或机选，并确定单式或复式组合，然后再提交购买。",
-    "purchase.mode.manual": "自选号码",
-    "purchase.mode.random": "机选号码",
-    "purchase.mode.single": "单式投注",
-    "purchase.mode.redMulti": "红球复式",
-    "purchase.mode.blueMulti": "蓝球复式",
-    "purchase.mode.fullMulti": "全复式",
-    "purchase.mode.rules.manual": "自选模式下，所有号码由您自行挑选。",
-    "purchase.mode.rules.random": "机选模式下，系统会随机生成符合条件的号码。",
-    "purchase.mode.rules.single":
-      "单式投注需选择6个红球（1-33）加1个蓝球（1-16）。",
-    "purchase.mode.rules.redMulti":
-      "红球复式需选择7-20个红球以及1个蓝球，可组合出多注号码。",
-    "purchase.mode.rules.blueMulti":
-      "蓝球复式需选择6个红球以及2-16个蓝球。",
-    "purchase.mode.rules.fullMulti":
-      "全复式需选择7-20个红球以及2-16个蓝球。",
-    "purchase.mode.redCount": "已选红球 {count} 个",
-    "purchase.mode.blueCount": "已选蓝球 {count} 个",
-    "purchase.mode.randomize": "重新机选",
-    "purchase.mode.clear": "清空选号",
-    "purchase.mode.totalCombos": "组合数量",
-    "purchase.mode.totalTickets": "{count} 注",
-    "purchase.mode.ticketPreviewTitle": "生成的彩票编号",
-    "purchase.mode.ticketPreviewDescription":
-      "您可以保存或分享这些虚拟彩票编号，调整号码会重新生成编号。",
-    "purchase.mode.ticketPreviewOverflow":
-      "仅展示前 {count} 注，总计 {total} 注。",
-    "purchase.mode.error.red.single": "单式投注必须选择6个红球。",
-    "purchase.mode.error.blue.single": "单式投注必须选择1个蓝球。",
-    "purchase.mode.error.red.redMulti":
-      "红球复式需选择7-20个红球，同时蓝球为1个。",
-    "purchase.mode.error.blue.redMulti": "红球复式蓝球需恰好1个。",
-    "purchase.mode.error.red.blueMulti": "蓝球复式需选择6个红球。",
-    "purchase.mode.error.blue.blueMulti":
-      "蓝球复式需选择2-16个蓝球。",
-    "purchase.mode.error.red.fullMulti":
-      "全复式需选择7-20个红球。",
-    "purchase.mode.error.blue.fullMulti":
-      "全复式需选择2-16个蓝球。",
-    "purchase.mode.error.invalidSelection": "请先完成符合规则的选号组合。",
-    "purchase.mode.overlay.title": "选择号码",
-    "purchase.mode.column.red": "红球",
-    "purchase.mode.column.blue": "蓝球",
-    "purchase.mode.hint":
-      "点击切换选中状态，悬停查看要求。机选会自动满足所选玩法的规则。",
+    "purchase.games.selectionStyle": "选号方式",
+    "purchase.games.manual": "手动选号",
+    "purchase.games.random": "机选",
+    "purchase.games.randomize": "重新机选",
+    "purchase.games.clear": "清空选号",
+    "purchase.games.manualHelper":
+      "手动模式下由你自行挑选所有号码，具体要求取决于当前玩法。",
+    "purchase.games.randomHelper":
+      "机选会按照当前玩法的规则自动生成符合要求的号码组合。",
+    "purchase.games.totalCombos": "组合总数",
+    "purchase.games.totalTickets": "{count} 注",
+    "purchase.games.confirm": "确认选号",
+    "purchase.games.selectedExact": "已选 {count} 个 / 需 {required} 个",
+    "purchase.games.selectedRange":
+      "已选 {count} 个（目标 {min}-{max} 个）",
+    "purchase.games.selectorTitle": "可选彩票",
+    "purchase.games.selectorPlaceholder": "请选择彩票玩法",
+    "purchase.games.selected": "当前选择",
+    "purchase.games.preview.title": "生成的虚拟票号",
+    "purchase.games.preview.description":
+      "可将这些虚拟票号收藏或分享，调整号码后会重新生成。",
+    "purchase.games.preview.overflow":
+      "仅展示前 {count} 注，共 {total} 注。",
+    "purchase.games.lottoMax.name": "LOTTO MAX",
+    "purchase.games.lottoMax.description":
+      "加拿大最受欢迎的 7 选乐透，可选择单式或组合投注。",
+    "purchase.games.lottoMax.hint":
+      "点击切换号码。组合投注会自动覆盖所有符合条件的 7 个号码组合。",
+    "purchase.games.lottoMax.pools.main": "主号码",
+    "purchase.games.lottoMax.modes.standard.label": "标准玩法（选 7）",
+    "purchase.games.lottoMax.modes.standard.helper":
+      "从 1-50 中选择 7 个号码。",
+    "purchase.games.lottoMax.modes.standard.error.main":
+      "需选择 7 个号码。",
+    "purchase.games.lottoMax.modes.combo8.label": "组合 8",
+    "purchase.games.lottoMax.modes.combo8.helper":
+      "选择 8 个号码，可生成 8 注标准投注。",
+    "purchase.games.lottoMax.modes.combo8.error.main":
+      "需选择 8 个号码。",
+    "purchase.games.lottoMax.modes.combo9.label": "组合 9",
+    "purchase.games.lottoMax.modes.combo9.helper":
+      "选择 9 个号码，可生成 36 注标准投注。",
+    "purchase.games.lottoMax.modes.combo9.error.main":
+      "需选择 9 个号码。",
+    "purchase.games.lottoMax.modes.combo10.label": "组合 10",
+    "purchase.games.lottoMax.modes.combo10.helper":
+      "选择 10 个号码，可生成 120 注标准投注。",
+    "purchase.games.lottoMax.modes.combo10.error.main":
+      "需选择 10 个号码。",
+    "purchase.games.lotto649.name": "LOTTO 6/49",
+    "purchase.games.lotto649.description":
+      "经典全国 6 选乐透，可搭配组合玩法。",
+    "purchase.games.lotto649.hint":
+      "从 1-49 中选择号码。组合投注会自动展开为所有 6 个号码组合。",
+    "purchase.games.lotto649.pools.main": "主号码",
+    "purchase.games.lotto649.modes.standard.label": "标准玩法（选 6）",
+    "purchase.games.lotto649.modes.standard.helper":
+      "从 1-49 中选择 6 个号码。",
+    "purchase.games.lotto649.modes.standard.error.main":
+      "需选择 6 个号码。",
+    "purchase.games.lotto649.modes.combo7.label": "组合 7",
+    "purchase.games.lotto649.modes.combo7.helper":
+      "选择 7 个号码，可生成 7 注。",
+    "purchase.games.lotto649.modes.combo7.error.main":
+      "需选择 7 个号码。",
+    "purchase.games.lotto649.modes.combo8.label": "组合 8",
+    "purchase.games.lotto649.modes.combo8.helper":
+      "选择 8 个号码，可生成 28 注。",
+    "purchase.games.lotto649.modes.combo8.error.main":
+      "需选择 8 个号码。",
+    "purchase.games.lotto649.modes.combo9.label": "组合 9",
+    "purchase.games.lotto649.modes.combo9.helper":
+      "选择 9 个号码，可生成 84 注。",
+    "purchase.games.lotto649.modes.combo9.error.main":
+      "需选择 9 个号码。",
+    "purchase.games.ontario49.name": "Ontario 49",
+    "purchase.games.ontario49.description":
+      "安省 6 选乐透，支持多号码组合。",
+    "purchase.games.ontario49.hint":
+      "从 1-49 中点击切换号码，组合投注会自动展开为全部 6 个号码组合。",
+    "purchase.games.ontario49.pools.main": "主号码",
+    "purchase.games.ontario49.modes.standard.label": "标准玩法（选 6）",
+    "purchase.games.ontario49.modes.standard.helper":
+      "选择 6 个号码。",
+    "purchase.games.ontario49.modes.standard.error.main":
+      "需选择 6 个号码。",
+    "purchase.games.ontario49.modes.combo7.label": "组合 7",
+    "purchase.games.ontario49.modes.combo7.helper":
+      "选择 7 个号码，可生成 7 注。",
+    "purchase.games.ontario49.modes.combo7.error.main":
+      "需选择 7 个号码。",
+    "purchase.games.dailyGrand.name": "Daily Grand",
+    "purchase.games.dailyGrand.description":
+      "选择 5 个主号码和 1 个 Grand 号码，有机会赢取终身大奖。",
+    "purchase.games.dailyGrand.hint":
+      "选择 5 个主号码（1-49）及 1 个 Grand 号码（1-7）。",
+    "purchase.games.dailyGrand.pools.main": "主号码",
+    "purchase.games.dailyGrand.pools.grand": "Grand 号码",
+    "purchase.games.dailyGrand.modes.standard.label": "标准玩法",
+    "purchase.games.dailyGrand.modes.standard.helper":
+      "选择 5 个主号码和 1 个 Grand 号码。",
+    "purchase.games.dailyGrand.modes.standard.error.main":
+      "需选择 5 个主号码。",
+    "purchase.games.dailyGrand.modes.standard.error.grand":
+      "需选择 1 个 Grand 号码。",
+    "purchase.games.lightningLotto.name": "Lightning Lotto",
+    "purchase.games.lightningLotto.description":
+      "极速开奖的五位号码乐透。",
+    "purchase.games.lightningLotto.hint":
+      "从 1-49 中选择 5 个不重复的号码。",
+    "purchase.games.lightningLotto.pools.main": "主号码",
+    "purchase.games.lightningLotto.modes.standard.label": "标准玩法",
+    "purchase.games.lightningLotto.modes.standard.helper":
+      "选择 5 个号码。",
+    "purchase.games.lightningLotto.modes.standard.error.main":
+      "需选择 5 个号码。",
+    "purchase.games.lottario.name": "Lottario",
+    "purchase.games.lottario.description":
+      "安省周六开奖的 6 选乐透，提供组合玩法。",
+    "purchase.games.lottario.hint":
+      "从 1-45 中点击号码，组合投注会展开为所有 6 个号码组合。",
+    "purchase.games.lottario.pools.main": "主号码",
+    "purchase.games.lottario.modes.standard.label": "标准玩法（选 6）",
+    "purchase.games.lottario.modes.standard.helper":
+      "选择 6 个号码。",
+    "purchase.games.lottario.modes.standard.error.main":
+      "需选择 6 个号码。",
+    "purchase.games.lottario.modes.combo7.label": "组合 7",
+    "purchase.games.lottario.modes.combo7.helper":
+      "选择 7 个号码，可生成 7 注。",
+    "purchase.games.lottario.modes.combo7.error.main":
+      "需选择 7 个号码。",
+    "purchase.games.dailyKeno.name": "Daily Keno",
+    "purchase.games.dailyKeno.description":
+      "选择 2-10 个号码的 Keno 玩法。",
+    "purchase.games.dailyKeno.hint":
+      "先确认 Spot 玩法，再从 1-70 中选择对应数量的号码。",
+    "purchase.games.dailyKeno.pools.main": "主号码",
+    "purchase.games.dailyKeno.modes.spot2.label": "Spot 2（选 2 个）",
+    "purchase.games.dailyKeno.modes.spot2.helper":
+      "从 1-70 中选择 2 个号码。",
+    "purchase.games.dailyKeno.modes.spot2.error.main":
+      "需选择 2 个号码。",
+    "purchase.games.dailyKeno.modes.spot3.label": "Spot 3（选 3 个）",
+    "purchase.games.dailyKeno.modes.spot3.helper":
+      "从 1-70 中选择 3 个号码。",
+    "purchase.games.dailyKeno.modes.spot3.error.main":
+      "需选择 3 个号码。",
+    "purchase.games.dailyKeno.modes.spot4.label": "Spot 4（选 4 个）",
+    "purchase.games.dailyKeno.modes.spot4.helper":
+      "从 1-70 中选择 4 个号码。",
+    "purchase.games.dailyKeno.modes.spot4.error.main":
+      "需选择 4 个号码。",
+    "purchase.games.dailyKeno.modes.spot5.label": "Spot 5（选 5 个）",
+    "purchase.games.dailyKeno.modes.spot5.helper":
+      "从 1-70 中选择 5 个号码。",
+    "purchase.games.dailyKeno.modes.spot5.error.main":
+      "需选择 5 个号码。",
+    "purchase.games.dailyKeno.modes.spot6.label": "Spot 6（选 6 个）",
+    "purchase.games.dailyKeno.modes.spot6.helper":
+      "从 1-70 中选择 6 个号码。",
+    "purchase.games.dailyKeno.modes.spot6.error.main":
+      "需选择 6 个号码。",
+    "purchase.games.dailyKeno.modes.spot7.label": "Spot 7（选 7 个）",
+    "purchase.games.dailyKeno.modes.spot7.helper":
+      "从 1-70 中选择 7 个号码。",
+    "purchase.games.dailyKeno.modes.spot7.error.main":
+      "需选择 7 个号码。",
+    "purchase.games.dailyKeno.modes.spot8.label": "Spot 8（选 8 个）",
+    "purchase.games.dailyKeno.modes.spot8.helper":
+      "从 1-70 中选择 8 个号码。",
+    "purchase.games.dailyKeno.modes.spot8.error.main":
+      "需选择 8 个号码。",
+    "purchase.games.dailyKeno.modes.spot9.label": "Spot 9（选 9 个）",
+    "purchase.games.dailyKeno.modes.spot9.helper":
+      "从 1-70 中选择 9 个号码。",
+    "purchase.games.dailyKeno.modes.spot9.error.main":
+      "需选择 9 个号码。",
+    "purchase.games.dailyKeno.modes.spot10.label": "Spot 10（选 10 个）",
+    "purchase.games.dailyKeno.modes.spot10.helper":
+      "从 1-70 中选择 10 个号码。",
+    "purchase.games.dailyKeno.modes.spot10.error.main":
+      "需选择 10 个号码。",
+    "purchase.games.pick4.name": "Pick 4",
+    "purchase.games.pick4.description": "每日开奖的四位数字游戏。",
+    "purchase.games.pick4.hint": "选择 4 个数字组合成投注号码。",
+    "purchase.games.pick4.pools.digits": "数字（0-9）",
+    "purchase.games.pick4.modes.standard.label": "标准玩法",
+    "purchase.games.pick4.modes.standard.helper": "选择 4 个数字。",
+    "purchase.games.pick4.modes.standard.error.digits":
+      "需选择 4 个数字。",
+    "purchase.games.pick3.name": "Pick 3",
+    "purchase.games.pick3.description": "每日开奖的三位数字游戏。",
+    "purchase.games.pick3.hint": "选择 3 个数字组合成投注号码。",
+    "purchase.games.pick3.pools.digits": "数字（0-9）",
+    "purchase.games.pick3.modes.standard.label": "标准玩法",
+    "purchase.games.pick3.modes.standard.helper": "选择 3 个数字。",
+    "purchase.games.pick3.modes.standard.error.digits":
+      "需选择 3 个数字。",
     "purchase.summary.ticketPriceUsd": "彩票单价（USDT）",
     "purchase.summary.totalUsd": "总花费（USDT）",
     "purchase.summary.pricePerTicketUsd": "2.00",
-    "purchase.mode.confirm": "确认选号",
     "purchase.feedback.noTickets": "请至少确认一组彩票后再提交。",
     "purchase.summary.groups": "选号组数",
     "purchase.preview.groupLabel": "第 {index} 组",
     "purchase.preview.remove": "移除",
+    "purchase.preview.clearAll": "一键移除",
     "purchase.preview.samples": "示例号码",
+    "purchase.preview.numbersLabel": "号码",
   },
   ko: {
     "site.title": "Web3 복권 허브",
@@ -512,67 +821,221 @@ const translations: TranslationDictionary = {
     "wallet.connect": "지갑 연결",
     "wallet.disconnect": "연결 해제",
     "wallet.unknownChain": "알 수 없음",
-    "purchase.mode.sectionTitle": "쌍색구 선택",
-    "purchase.mode.description":
-      "중국 복권 ‘쌍색구’ 규칙을 바탕으로 수동/자동, 단식/복식 조합을 선택하세요.",
-    "purchase.mode.manual": "수동 선택",
-    "purchase.mode.random": "자동 선택",
-    "purchase.mode.single": "단식",
-    "purchase.mode.redMulti": "적색 복식",
-    "purchase.mode.blueMulti": "청색 복식",
-    "purchase.mode.fullMulti": "전체 복식",
-    "purchase.mode.rules.manual": "수동 모드에서는 모든 번호를 직접 고릅니다.",
-    "purchase.mode.rules.random":
-      "자동 모드는 규칙을 만족하는 번호 조합을 무작위로 생성합니다.",
-    "purchase.mode.rules.single":
-      "단식은 빨간 공 6개(1-33)와 파란 공 1개(1-16)를 선택합니다.",
-    "purchase.mode.rules.redMulti":
-      "적색 복식은 빨간 공 7-20개와 파란 공 1개를 선택해 다중 조합을 만듭니다.",
-    "purchase.mode.rules.blueMulti":
-      "청색 복식은 빨간 공 6개와 파란 공 2-16개를 선택합니다.",
-    "purchase.mode.rules.fullMulti":
-      "전체 복식은 빨간 공 7-20개와 파란 공 2-16개를 선택합니다.",
-    "purchase.mode.redCount": "선택한 빨간 공 {count}개",
-    "purchase.mode.blueCount": "선택한 파란 공 {count}개",
-    "purchase.mode.randomize": "번호 다시뽑기",
-    "purchase.mode.clear": "선택 초기화",
-    "purchase.mode.totalCombos": "조합 수",
-    "purchase.mode.totalTickets": "{count}장",
-    "purchase.mode.ticketPreviewTitle": "발급된 티켓 ID",
-    "purchase.mode.ticketPreviewDescription":
-      "이 가상 티켓 ID를 기록하거나 공유하세요. 번호를 조정하면 새로 생성됩니다.",
-    "purchase.mode.ticketPreviewOverflow":
-      "최초 {count}장만 표시합니다 (총 {total}장).",
-    "purchase.mode.error.red.single": "단식은 빨간 공 6개가 필요합니다.",
-    "purchase.mode.error.blue.single": "단식은 파란 공 1개가 필요합니다.",
-    "purchase.mode.error.red.redMulti":
-      "적색 복식은 빨간 공 7-20개와 파란 공 1개가 필요합니다.",
-    "purchase.mode.error.blue.redMulti":
-      "적색 복식은 파란 공이 정확히 1개여야 합니다.",
-    "purchase.mode.error.red.blueMulti":
-      "청색 복식은 빨간 공 6개가 필요합니다.",
-    "purchase.mode.error.blue.blueMulti":
-      "청색 복식은 파란 공 2-16개가 필요합니다.",
-    "purchase.mode.error.red.fullMulti":
-      "전체 복식은 빨간 공 7-20개가 필요합니다.",
-    "purchase.mode.error.blue.fullMulti":
-      "전체 복식은 파란 공 2-16개가 필요합니다.",
-    "purchase.mode.error.invalidSelection":
-      "규칙에 맞는 번호 조합을 먼저 선택하세요.",
-    "purchase.mode.overlay.title": "번호 선택",
-    "purchase.mode.column.red": "빨간 공",
-    "purchase.mode.column.blue": "파란 공",
-    "purchase.mode.hint":
-      "클릭하면 선택이 전환됩니다. 자동 선택은 각 모드 요구 조건을 자동으로 충족합니다.",
+    "purchase.games.selectionStyle": "번호 선택 방식",
+    "purchase.games.manual": "수동 선택",
+    "purchase.games.random": "자동 선택",
+    "purchase.games.randomize": "번호 다시뽑기",
+    "purchase.games.clear": "선택 초기화",
+    "purchase.games.manualHelper":
+      "수동 모드에서는 선택한 플레이의 규칙에 따라 번호를 직접 고릅니다.",
+    "purchase.games.randomHelper":
+      "자동 선택은 현재 플레이 조건을 만족하는 조합을 생성합니다.",
+    "purchase.games.totalCombos": "조합 수",
+    "purchase.games.totalTickets": "{count}장",
+    "purchase.games.confirm": "선택 확정",
+    "purchase.games.selectedExact": "선택 {count}개 / 필요 {required}개",
+    "purchase.games.selectedRange":
+      "선택 {count}개 (목표 {min}-{max}개)",
+    "purchase.games.selectorTitle": "복권 종류",
+    "purchase.games.selectorPlaceholder": "복권을 선택하세요",
+    "purchase.games.selected": "선택됨",
+    "purchase.games.preview.title": "발급된 티켓 ID",
+    "purchase.games.preview.description":
+      "번호를 조정하면 새로운 가상 티켓 ID가 생성되며 기록하거나 공유할 수 있습니다.",
+    "purchase.games.preview.overflow":
+      "총 {total}장 중 앞의 {count}장만 표시합니다.",
+    "purchase.games.lottoMax.name": "LOTTO MAX",
+    "purchase.games.lottoMax.description":
+      "캐나다 최대 잭팟 7선택 복권으로 단식과 콤보 플레이를 제공합니다.",
+    "purchase.games.lottoMax.hint":
+      "번호를 클릭해 토글하세요. 콤보 플레이는 가능한 모든 7개 조합을 자동으로 확장합니다.",
+    "purchase.games.lottoMax.pools.main": "주 번호",
+    "purchase.games.lottoMax.modes.standard.label": "표준 플레이 (7선택)",
+    "purchase.games.lottoMax.modes.standard.helper":
+      "1-50 사이에서 정확히 7개의 번호를 선택합니다.",
+    "purchase.games.lottoMax.modes.standard.error.main":
+      "정확히 7개의 번호를 선택하세요.",
+    "purchase.games.lottoMax.modes.combo8.label": "콤보 8",
+    "purchase.games.lottoMax.modes.combo8.helper":
+      "8개 번호를 선택하면 8장의 표준 티켓이 생성됩니다.",
+    "purchase.games.lottoMax.modes.combo8.error.main":
+      "정확히 8개의 번호를 선택하세요.",
+    "purchase.games.lottoMax.modes.combo9.label": "콤보 9",
+    "purchase.games.lottoMax.modes.combo9.helper":
+      "9개 번호를 선택하면 36장의 표준 티켓이 생성됩니다.",
+    "purchase.games.lottoMax.modes.combo9.error.main":
+      "정확히 9개의 번호를 선택하세요.",
+    "purchase.games.lottoMax.modes.combo10.label": "콤보 10",
+    "purchase.games.lottoMax.modes.combo10.helper":
+      "10개 번호를 선택하면 120장의 표준 티켓이 생성됩니다.",
+    "purchase.games.lottoMax.modes.combo10.error.main":
+      "정확히 10개의 번호를 선택하세요.",
+    "purchase.games.lotto649.name": "LOTTO 6/49",
+    "purchase.games.lotto649.description":
+      "캐나다 전통 6선택 복권으로 다양한 콤보 옵션을 제공합니다.",
+    "purchase.games.lotto649.hint":
+      "1-49 사이에서 번호를 선택하세요. 콤보 플레이는 가능한 모든 6번호 조합으로 확장됩니다.",
+    "purchase.games.lotto649.pools.main": "주 번호",
+    "purchase.games.lotto649.modes.standard.label": "표준 플레이 (6선택)",
+    "purchase.games.lotto649.modes.standard.helper":
+      "정확히 6개의 번호를 선택합니다.",
+    "purchase.games.lotto649.modes.standard.error.main":
+      "정확히 6개의 번호를 선택하세요.",
+    "purchase.games.lotto649.modes.combo7.label": "콤보 7",
+    "purchase.games.lotto649.modes.combo7.helper":
+      "7개 번호를 선택하면 7장의 티켓이 생성됩니다.",
+    "purchase.games.lotto649.modes.combo7.error.main":
+      "정확히 7개의 번호를 선택하세요.",
+    "purchase.games.lotto649.modes.combo8.label": "콤보 8",
+    "purchase.games.lotto649.modes.combo8.helper":
+      "8개 번호를 선택하면 28장의 티켓이 생성됩니다.",
+    "purchase.games.lotto649.modes.combo8.error.main":
+      "정확히 8개의 번호를 선택하세요.",
+    "purchase.games.lotto649.modes.combo9.label": "콤보 9",
+    "purchase.games.lotto649.modes.combo9.helper":
+      "9개 번호를 선택하면 84장의 티켓이 생성됩니다.",
+    "purchase.games.lotto649.modes.combo9.error.main":
+      "정확히 9개의 번호를 선택하세요.",
+    "purchase.games.ontario49.name": "Ontario 49",
+    "purchase.games.ontario49.description":
+      "온타리오 주 6선택 복권으로 다중 번호 콤보를 지원합니다.",
+    "purchase.games.ontario49.hint":
+      "번호를 클릭해 토글하면 모든 6번호 조합이 자동으로 생성됩니다.",
+    "purchase.games.ontario49.pools.main": "주 번호",
+    "purchase.games.ontario49.modes.standard.label": "표준 플레이 (6선택)",
+    "purchase.games.ontario49.modes.standard.helper":
+      "정확히 6개의 번호를 선택합니다.",
+    "purchase.games.ontario49.modes.standard.error.main":
+      "정확히 6개의 번호를 선택하세요.",
+    "purchase.games.ontario49.modes.combo7.label": "콤보 7",
+    "purchase.games.ontario49.modes.combo7.helper":
+      "7개 번호를 선택하면 7장의 티켓이 생성됩니다.",
+    "purchase.games.ontario49.modes.combo7.error.main":
+      "정확히 7개의 번호를 선택하세요.",
+    "purchase.games.dailyGrand.name": "Daily Grand",
+    "purchase.games.dailyGrand.description":
+      "주 번호 5개와 Grand 번호 1개를 맞추면 하루 1000달러 상금을 노려볼 수 있습니다.",
+    "purchase.games.dailyGrand.hint":
+      "1-49에서 5개, 1-7에서 1개의 Grand 번호를 선택하세요.",
+    "purchase.games.dailyGrand.pools.main": "주 번호",
+    "purchase.games.dailyGrand.pools.grand": "Grand 번호",
+    "purchase.games.dailyGrand.modes.standard.label": "표준 플레이",
+    "purchase.games.dailyGrand.modes.standard.helper":
+      "주 번호 5개와 Grand 번호 1개를 선택합니다.",
+    "purchase.games.dailyGrand.modes.standard.error.main":
+      "주 번호 5개를 선택하세요.",
+    "purchase.games.dailyGrand.modes.standard.error.grand":
+      "Grand 번호 1개를 선택하세요.",
+    "purchase.games.lightningLotto.name": "Lightning Lotto",
+    "purchase.games.lightningLotto.description":
+      "즉석으로 진행되는 5번호 잭팟 게임입니다.",
+    "purchase.games.lightningLotto.hint":
+      "1-49에서 중복 없이 5개의 번호를 선택하세요.",
+    "purchase.games.lightningLotto.pools.main": "주 번호",
+    "purchase.games.lightningLotto.modes.standard.label": "표준 플레이",
+    "purchase.games.lightningLotto.modes.standard.helper":
+      "정확히 5개의 번호를 선택합니다.",
+    "purchase.games.lightningLotto.modes.standard.error.main":
+      "정확히 5개의 번호를 선택하세요.",
+    "purchase.games.lottario.name": "Lottario",
+    "purchase.games.lottario.description":
+      "온타리오 주 토요일 추첨 복권으로 콤보 옵션을 제공합니다.",
+    "purchase.games.lottario.hint":
+      "1-45 사이에서 번호를 선택하면 모든 6번호 조합이 자동으로 생성됩니다.",
+    "purchase.games.lottario.pools.main": "주 번호",
+    "purchase.games.lottario.modes.standard.label": "표준 플레이 (6선택)",
+    "purchase.games.lottario.modes.standard.helper":
+      "정확히 6개의 번호를 선택합니다.",
+    "purchase.games.lottario.modes.standard.error.main":
+      "정확히 6개의 번호를 선택하세요.",
+    "purchase.games.lottario.modes.combo7.label": "콤보 7",
+    "purchase.games.lottario.modes.combo7.helper":
+      "7개 번호를 선택하면 7장의 티켓이 생성됩니다.",
+    "purchase.games.lottario.modes.combo7.error.main":
+      "정확히 7개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.name": "Daily Keno",
+    "purchase.games.dailyKeno.description":
+      "2~10개 번호를 선택하는 Keno 플레이입니다.",
+    "purchase.games.dailyKeno.hint":
+      "먼저 Spot 크기를 고른 뒤 1-70 사이에서 해당 개수만큼 번호를 선택하세요.",
+    "purchase.games.dailyKeno.pools.main": "주 번호",
+    "purchase.games.dailyKeno.modes.spot2.label": "Spot 2 (2선택)",
+    "purchase.games.dailyKeno.modes.spot2.helper":
+      "1-70에서 정확히 2개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot2.error.main":
+      "정확히 2개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.modes.spot3.label": "Spot 3 (3선택)",
+    "purchase.games.dailyKeno.modes.spot3.helper":
+      "1-70에서 정확히 3개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot3.error.main":
+      "정확히 3개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.modes.spot4.label": "Spot 4 (4선택)",
+    "purchase.games.dailyKeno.modes.spot4.helper":
+      "1-70에서 정확히 4개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot4.error.main":
+      "정확히 4개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.modes.spot5.label": "Spot 5 (5선택)",
+    "purchase.games.dailyKeno.modes.spot5.helper":
+      "1-70에서 정확히 5개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot5.error.main":
+      "정확히 5개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.modes.spot6.label": "Spot 6 (6선택)",
+    "purchase.games.dailyKeno.modes.spot6.helper":
+      "1-70에서 정확히 6개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot6.error.main":
+      "정확히 6개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.modes.spot7.label": "Spot 7 (7선택)",
+    "purchase.games.dailyKeno.modes.spot7.helper":
+      "1-70에서 정확히 7개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot7.error.main":
+      "정확히 7개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.modes.spot8.label": "Spot 8 (8선택)",
+    "purchase.games.dailyKeno.modes.spot8.helper":
+      "1-70에서 정확히 8개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot8.error.main":
+      "정확히 8개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.modes.spot9.label": "Spot 9 (9선택)",
+    "purchase.games.dailyKeno.modes.spot9.helper":
+      "1-70에서 정확히 9개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot9.error.main":
+      "정확히 9개의 번호를 선택하세요.",
+    "purchase.games.dailyKeno.modes.spot10.label": "Spot 10 (10선택)",
+    "purchase.games.dailyKeno.modes.spot10.helper":
+      "1-70에서 정확히 10개의 번호를 선택합니다.",
+    "purchase.games.dailyKeno.modes.spot10.error.main":
+      "정확히 10개의 번호를 선택하세요.",
+    "purchase.games.pick4.name": "Pick 4",
+    "purchase.games.pick4.description":
+      "매일 추첨되는 4자리 숫자 게임입니다.",
+    "purchase.games.pick4.hint":
+      "0-9 사이 숫자 4개를 선택해 번호 세트를 만드세요.",
+    "purchase.games.pick4.pools.digits": "숫자 (0-9)",
+    "purchase.games.pick4.modes.standard.label": "표준 플레이",
+    "purchase.games.pick4.modes.standard.helper":
+      "정확히 4개의 숫자를 선택합니다.",
+    "purchase.games.pick4.modes.standard.error.digits":
+      "정확히 4개의 숫자를 선택하세요.",
+    "purchase.games.pick3.name": "Pick 3",
+    "purchase.games.pick3.description":
+      "매일 추첨되는 3자리 숫자 게임입니다.",
+    "purchase.games.pick3.hint":
+      "0-9 사이 숫자 3개를 선택해 번호 세트를 만드세요.",
+    "purchase.games.pick3.pools.digits": "숫자 (0-9)",
+    "purchase.games.pick3.modes.standard.label": "표준 플레이",
+    "purchase.games.pick3.modes.standard.helper":
+      "정확히 3개의 숫자를 선택합니다.",
+    "purchase.games.pick3.modes.standard.error.digits":
+      "정확히 3개의 숫자를 선택하세요.",
     "purchase.summary.ticketPriceUsd": "티켓 가격 (USDT)",
     "purchase.summary.totalUsd": "총 비용 (USDT)",
     "purchase.summary.pricePerTicketUsd": "2.00",
-    "purchase.mode.confirm": "선택 확정",
     "purchase.feedback.noTickets": "제출 전에 최소 한 개의 티켓을 확정하세요.",
     "purchase.summary.groups": "확정된 조합",
     "purchase.preview.groupLabel": "그룹 {index}",
     "purchase.preview.remove": "삭제",
+    "purchase.preview.clearAll": "전체 삭제",
     "purchase.preview.samples": "샘플 티켓",
+    "purchase.preview.numbersLabel": "번호",
   },
 };
 
