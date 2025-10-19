@@ -1,0 +1,3 @@
+export const SINGLE_TICKET_USD = 2;
+export const SINGLE_TICKET_USD_FORMATTED =
+  SINGLE_TICKET_USD.toFixed(2);
