@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import type { ComponentProps } from "react";
 import { useAccount } from "wagmi";
 import { useSearchParams } from "next/navigation";
@@ -265,7 +265,7 @@ export default function PurchasePage() {
 
       <CurrencyConverter />
 
-      <div className="grid gap-6 lg:grid-cols-[240px,1fr]">
+      <div className="grid gap-6 lg:grid-cols-[320px,1fr]">
         <GameSelector
           games={LOTTERY_GAMES}
           selectedGameId={selectedGameId}
@@ -393,92 +393,125 @@ function GameSelector({
   onSelect: (id: LotteryGameId) => void;
 }) {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const accentGradients = [
+    "from-fuchsia-500/35 via-indigo-500/15 to-sky-500/20",
+    "from-emerald-500/30 via-cyan-500/15 to-fuchsia-500/20",
+    "from-amber-500/30 via-orange-500/20 to-rose-500/20",
+    "from-blue-500/30 via-indigo-500/20 to-purple-500/20",
+  ];
 
   const selectedGame = useMemo(
     () => games.find((game) => game.id === selectedGameId) ?? null,
     [games, selectedGameId]
   );
 
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClick);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-    };
-  }, []);
-
-  const handleSelect = (id: LotteryGameId) => {
-    onSelect(id);
-    setIsOpen(false);
-  };
-
   return (
-    <div className="glow-card overflow-hidden p-5" ref={containerRef}>
-      <div className="relative z-10 space-y-4">
-        <label className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+    <div className="glow-card flex h-full flex-col gap-5 p-5">
+      <div className="space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-400">
           {t("purchase.games.selectorTitle")}
-        </label>
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setIsOpen((previous) => !previous)}
-            className="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-slate-100 transition duration-300 hover:border-fuchsia-400/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400"
-            aria-haspopup="listbox"
-            aria-expanded={isOpen}
-          >
-            <span>
-              {selectedGame
-                ? t(selectedGame.nameKey)
-                : t("purchase.games.selectorPlaceholder")}
-            </span>
-            <span className="text-xs text-slate-400">
-              {isOpen ? "▲" : "▼"}
-            </span>
-          </button>
-
-          {isOpen && (
-            <ul
-              role="listbox"
-              className="absolute left-0 right-0 z-20 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur"
-            >
-              {games.map((game) => {
-                const active = game.id === selectedGameId;
-                return (
-                  <li key={game.id}>
-                    <button
-                      type="button"
-                      onClick={() => handleSelect(game.id)}
-                      role="option"
-                      aria-selected={active}
-                      className={`flex w-full items-center justify-between px-4 py-3 text-sm transition duration-200 ${
-                        active
-                          ? "rounded-xl bg-fuchsia-500/20 text-fuchsia-100"
-                          : "text-slate-200 hover:bg-white/10 hover:text-white"
-                      }`}
-                    >
-                      <span>{t(game.nameKey)}</span>
-                      {active && (
-                        <span className="text-xs uppercase text-fuchsia-200">
-                          {t("purchase.games.selected")}
+        </p>
+        <p className="text-xs text-slate-400">
+          {selectedGame
+            ? t(selectedGame.descriptionKey)
+            : t("purchase.games.selectorPlaceholder")}
+        </p>
+      </div>
+      <div className="relative flex-1">
+        <div className="pointer-events-none absolute inset-0 rounded-3xl border border-white/5" />
+        <ul className="scrollbar-glass relative flex max-h-[420px] flex-col gap-3 overflow-y-auto pr-1">
+          {games.map((game, index) => {
+            const isActive = game.id === selectedGameId;
+            const accent = accentGradients[index % accentGradients.length];
+            return (
+              <li key={game.id}>
+                <button
+                  type="button"
+                  onClick={() => onSelect(game.id)}
+                  aria-pressed={isActive}
+                  className={`group relative w-full overflow-hidden rounded-2xl border px-4 py-4 text-left transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400 ${
+                    isActive
+                      ? "border-white/30 text-white shadow-[0_24px_60px_-32px_rgba(167,139,250,0.6)]"
+                      : "border-white/10 text-slate-200 hover:border-fuchsia-400/60 hover:text-white hover:shadow-[0_24px_60px_-40px_rgba(124,58,237,0.55)]"
+                  }`}
+                >
+                  <span
+                    className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-0 transition duration-300 ${
+                      isActive ? "opacity-80" : "group-hover:opacity-60"
+                    }`}
+                  />
+                  <span className="absolute right-4 top-4 h-2 w-2 rounded-full bg-white/40 shadow-[0_0_12px_rgba(255,255,255,0.4)] group-hover:scale-110 group-hover:bg-white/70" />
+                  <div className="relative z-10 flex items-start justify-between gap-3">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center rounded-full border border-white/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.28em] text-slate-200">
+                          {game.ticketPrefix}
                         </span>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+                        {isActive ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-200">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                            {t("purchase.games.selected")}
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="text-base font-semibold leading-tight text-white">
+                        {t(game.nameKey)}
+                      </p>
+                      <p
+                        className="text-xs text-slate-200/80 max-w-[16rem]"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {t(game.hintKey)}
+                      </p>
+                    </div>
+                    <ChevronIcon
+                      className={`h-4 w-4 text-white/40 transition duration-300 ${isActive ? "translate-x-0 opacity-100" : "translate-x-1 opacity-40 group-hover:translate-x-0 group-hover:opacity-100"}`}
+                    />
+                  </div>
+                  <div className="relative z-10 mt-4 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em]">
+                    {game.modes.slice(0, 3).map((mode) => (
+                      <span
+                        key={mode.id}
+                        className={`rounded-full border border-white/15 px-3 py-1 text-slate-200 ${
+                          isActive ? "bg-white/10 text-white" : "bg-white/5"
+                        }`}
+                      >
+                        {t(mode.labelKey)}
+                      </span>
+                    ))}
+                    {game.modes.length > 3 ? (
+                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-slate-200">
+                        +{game.modes.length - 3}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="relative z-10 mt-4 flex flex-wrap gap-3 text-[10px] font-mono text-slate-300">
+                    {game.pools.map((pool) => (
+                      <span
+                        key={pool.id}
+                        className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-2 py-1 text-slate-200/80"
+                      >
+                        <span className="uppercase tracking-[0.18em] text-slate-400">
+                          {t(pool.labelKey)}
+                        </span>
+                        <span>
+                          {pool.start}
+                          {" – "}
+                          {pool.end}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );
@@ -713,6 +746,20 @@ function normalizeSelections(
 
 function formatNumbers(numbers: number[], padTo = 2) {
   return numbers.map((number) => number.toString().padStart(padTo, "0")).join(" ");
+}
+
+function ChevronIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden {...props}>
+      <path
+        d="M6 4.5 10 8l-4 3.5"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 function PurchaseIcon(props: ComponentProps<"svg">) {

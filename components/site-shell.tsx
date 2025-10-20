@@ -1,7 +1,14 @@
 "use client";
 
-import type { ReactNode, SVGProps } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type SVGProps,
+} from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { WalletButton } from "@/components/wallet-button";
 import { LanguageToggle } from "@/components/language-toggle";
@@ -10,22 +17,34 @@ import { useTranslation } from "@/lib/i18n";
 export function SiteShell({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
+  const mobileMenuLinks = [
+    { href: "/dashboard", label: t("nav.dashboard") },
+    { href: "/lotteries", label: t("nav.lotteries") },
+    { href: "/purchase", label: t("nav.purchase") },
+  ];
+  const mobileMenuLabels = {
+    open: t("nav.menu.open"),
+    close: t("nav.menu.close"),
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col">
       <div className="pointer-events-none absolute inset-x-0 top-[-10%] z-0 h-[420px] bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.22),_transparent_65%)] blur-[120px]" />
-      <div className="pointer-events-none absolute inset-y-0 right-[-35%] z-0 w-[60%] bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.18),_transparent_60%)] blur-[100px]" />
-      <header className="relative z-10 border-b border-white/10 bg-slate-950/40">
+      <div className="pointer-events-none absolute inset-y-0 right-[-6%] z-0 w-[88%] bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.18),_transparent_60%)] blur-[100px] sm:right-[-18%] sm:w-[72%] lg:right-[-35%] lg:w-[60%]" />
+      <header className="relative z-40 border-b border-white/10 bg-slate-950/40">
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(124,58,237,0.16),rgba(15,23,42,0.2),rgba(56,189,248,0.12))] opacity-70" />
         <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5 sm:flex-nowrap">
-          <Link href="/dashboard" className="group inline-flex flex-col">
-            <span className="gradient-text text-lg font-semibold tracking-tight drop-shadow">
-              {t("site.title")}
-            </span>
-            <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-slate-400 transition group-hover:text-slate-200">
-              {t("site.baseline")}
-            </span>
-          </Link>
+          <div className="flex min-w-0 flex-1 items-center gap-3 sm:flex-none">
+            <MobileMenu links={mobileMenuLinks} labels={mobileMenuLabels} />
+            <Link href="/dashboard" className="group inline-flex flex-col">
+              <span className="gradient-text text-lg font-semibold tracking-tight drop-shadow">
+                {t("site.title")}
+              </span>
+              <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-slate-400 transition group-hover:text-slate-200">
+                {t("site.baseline")}
+              </span>
+            </Link>
+          </div>
           <div className="flex flex-1 flex-wrap items-center justify-end gap-4 md:flex-initial">
             <Navigation />
             <LanguageToggle />
@@ -35,7 +54,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="relative z-10 mx-auto w-full max-w-6xl flex-1 px-6 py-12">
+      <main className="relative z-0 mx-auto w-full max-w-6xl flex-1 px-6 py-12">
         {children}
       </main>
       <footer className="relative z-10 border-t border-white/10 py-14">
@@ -97,6 +116,120 @@ export function SiteShell({ children }: { children: ReactNode }) {
   );
 }
 
+function MobileMenu({
+  links,
+  labels,
+}: {
+  links: { href: string; label: string }[];
+  labels: { open: string; close: string };
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleClick = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  if (links.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="relative md:hidden" ref={menuRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen((previous) => !previous)}
+        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition duration-300 hover:border-fuchsia-500/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400"
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        aria-label={isOpen ? labels.close : labels.open}
+      >
+        <span className="relative block h-4 w-6">
+          <span
+            className={`absolute left-0 h-[2px] w-full rounded-full bg-gradient-to-r from-fuchsia-400 via-indigo-300 to-cyan-300 transition-transform duration-200 ${
+              isOpen ? "top-1/2 translate-y-[-1px] rotate-45" : "top-0"
+            }`}
+          />
+          <span
+            className={`absolute left-0 top-1/2 h-[2px] w-full -translate-y-1/2 rounded-full bg-gradient-to-r from-fuchsia-400 via-indigo-300 to-cyan-300 transition-opacity duration-150 ${
+              isOpen ? "opacity-0" : "opacity-100"
+            }`}
+          />
+          <span
+            className={`absolute left-0 h-[2px] w-full rounded-full bg-gradient-to-r from-fuchsia-400 via-indigo-300 to-cyan-300 transition-transform duration-200 ${
+              isOpen ? "bottom-1/2 translate-y-[1px] -rotate-45" : "bottom-0"
+            }`}
+          />
+        </span>
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 top-full z-50 mt-3 w-48 rounded-2xl border border-white/10 bg-slate-950/95 p-3 shadow-2xl backdrop-blur">
+          <ul className="space-y-1" role="menu">
+            {links.map((link) => {
+              const isActive =
+                pathname === link.href ||
+                pathname?.startsWith(`${link.href}/`);
+              const handleNavigate = () => {
+                setIsOpen(false);
+                router.push(link.href);
+              };
+              return (
+                <li key={link.href}>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={handleNavigate}
+                    className={`block w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition duration-200 ${
+                      isActive
+                        ? "bg-gradient-to-r from-fuchsia-600/50 via-indigo-500/40 to-cyan-500/50 text-white shadow-[0_18px_40px_-28px_rgba(99,102,241,0.6)]"
+                        : "text-slate-200 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SocialIcon({
   children,
   href,
@@ -127,11 +260,11 @@ function FooterColumn({
   links: { label: string; href: string }[];
 }) {
   return (
-    <div className="min-w-[14rem] space-y-4">
-      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-slate-400">
+    <div className="min-w-0 space-y-4">
+      <p className="whitespace-nowrap text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-slate-400">
         {heading}
       </p>
-      <ul className="space-y-2 text-sm">
+      <ul className="flex flex-col gap-2 text-sm leading-6">
         {links.map((link) => (
           <li key={link.label}>
             <Link

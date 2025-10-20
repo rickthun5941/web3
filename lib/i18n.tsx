@@ -60,6 +60,8 @@ const translations: TranslationDictionary = {
     "nav.dashboard": "Dashboard",
     "nav.lotteries": "Lottery Listings",
     "nav.purchase": "Buy Tickets",
+    "nav.menu.open": "Open main menu",
+    "nav.menu.close": "Close main menu",
     "dashboard.hero.heading": "Product Overview",
     "dashboard.hero.body":
       "The Web3 Lottery Hub is a global on-chain ticket marketplace. Powered by decentralized ledgers and smart contracts, every purchase, drawing, and payout executes transparently on-chain. Connect your wallet, pick your preferred asset, and enjoy low fees with privacy-first participation.",
@@ -410,6 +412,8 @@ const translations: TranslationDictionary = {
     "nav.dashboard": "仪表盘",
     "nav.lotteries": "抽奖列表",
     "nav.purchase": "购买彩票",
+    "nav.menu.open": "展开主菜单",
+    "nav.menu.close": "收起主菜单",
     "dashboard.hero.heading": "产品概述",
     "dashboard.hero.body":
       "区块链彩票购买中心是一款面向全球玩家的 Web3 彩票交易平台。依托去中心化账本和智能合约，平台将购票、开奖、兑付全链上化，保证流程公开可信。用户只需连接钱包，即可使用喜爱的加密资产参与抽奖，享受更低手续费与更强隐私保护。",
@@ -741,6 +745,8 @@ const translations: TranslationDictionary = {
     "nav.dashboard": "대시보드",
     "nav.lotteries": "복권 목록",
     "nav.purchase": "티켓 구매",
+    "nav.menu.open": "메인 메뉴 열기",
+    "nav.menu.close": "메인 메뉴 닫기",
     "dashboard.hero.heading": "제품 개요",
     "dashboard.hero.body":
       "Web3 복권 허브는 전 세계 사용자를 위한 온체인 복권 거래 플랫폼입니다. 분산 원장과 스마트 컨트랙트에 기반해 구매, 추첨, 지급까지 모든 과정을 온체인으로 처리하여 투명성을 보장합니다. 지갑을 연결하고 선호하는 자산으로 참여하면 낮은 수수료와 향상된 프라이버시를 누릴 수 있습니다.",
