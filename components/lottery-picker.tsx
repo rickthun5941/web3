@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { useTranslation } from "@/lib/i18n";
 import {
   type LotteryGameDefinition,
@@ -222,125 +223,175 @@ export function LotteryPicker({ game, onConfirm, onChange }: LotteryPickerProps)
   }, [mode.id, style, handleRandomize]);
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-slate-950/60 p-6 shadow-lg backdrop-blur">
-      <header className="space-y-2">
-        <h2 className="text-xl font-semibold text-white">{t(game.nameKey)}</h2>
-        <p className="text-sm text-slate-300">{t(game.descriptionKey)}</p>
-        <p className="text-xs text-slate-500">{t(game.hintKey)}</p>
-      </header>
+    <section className="glow-card overflow-hidden p-6 sm:p-8">
+      <div className="pointer-events-none absolute -right-28 top-[-110px] h-72 w-72 rounded-full bg-fuchsia-500/25 blur-3xl" />
+      <div className="pointer-events-none absolute -left-36 bottom-[-120px] h-80 w-80 rounded-full bg-cyan-500/25 blur-3xl" />
+      <div className="relative z-10 space-y-6">
+        <header className="space-y-2">
+          <h2 className="text-xl font-semibold text-white">
+            <span className="gradient-text">{t(game.nameKey)}</span>
+          </h2>
+          <p className="text-sm text-slate-300">{t(game.descriptionKey)}</p>
+          <p className="text-xs text-slate-500">{t(game.hintKey)}</p>
+        </header>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase text-slate-400">
-            {t("purchase.games.selectionStyle")}
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => setStyle("manual")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                style === "manual"
-                  ? "bg-indigo-500 text-white shadow"
-                  : "bg-white/10 text-slate-200 hover:bg-white/20"
-              }`}
-            >
-              {t("purchase.games.manual")}
-            </button>
-            <button
-              type="button"
-              onClick={() => setStyle("random")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                style === "random"
-                  ? "bg-indigo-500 text-white shadow"
-                  : "bg-white/10 text-slate-200 hover:bg-white/20"
-              }`}
-            >
-              {t("purchase.games.random")}
-            </button>
-            <button
-              type="button"
-              onClick={handleRandomize}
-              className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/20"
-            >
-              {t("purchase.games.randomize")}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="rounded-full bg-white/5 px-4 py-2 text-sm text-slate-300 transition hover:bg-white/10"
-            >
-              {t("purchase.games.clear")}
-            </button>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+              {t("purchase.games.selectionStyle")}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <StyleButton
+                active={style === "manual"}
+                label={t("purchase.games.manual")}
+                onClick={() => setStyle("manual")}
+              />
+              <StyleButton
+                active={style === "random"}
+                label={t("purchase.games.random")}
+                onClick={() => setStyle("random")}
+              />
+              <GhostButton onClick={handleRandomize}>
+                {t("purchase.games.randomize")}
+              </GhostButton>
+              <GhostButton variant="subtle" onClick={handleClear}>
+                {t("purchase.games.clear")}
+              </GhostButton>
+            </div>
+            <p className="text-xs text-slate-500">
+              {style === "manual"
+                ? t("purchase.games.manualHelper")
+                : t("purchase.games.randomHelper")}
+            </p>
           </div>
-          <p className="text-xs text-slate-500">
-            {style === "manual"
-              ? t("purchase.games.manualHelper")
-              : t("purchase.games.randomHelper")}
-          </p>
+
+          <div className="space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+              {t("purchase.games.totalCombos")}
+            </p>
+            <p className="text-3xl font-semibold text-white">
+              {t("purchase.games.totalTickets", { count: combinationCount })}
+            </p>
+            <p className="text-xs text-slate-500">
+              {t("purchase.summary.quantity")}: {combinationCount}
+            </p>
+            {validationMessage ? (
+              <p className="text-xs text-rose-400">{validationMessage}</p>
+            ) : null}
+          </div>
         </div>
 
-        <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase text-slate-400">
-            {t("purchase.games.totalCombos")}
-          </p>
-          <p className="text-3xl font-semibold text-white">
-            {t("purchase.games.totalTickets", { count: combinationCount })}
-          </p>
-          <p className="text-xs text-slate-500">
-            {t("purchase.summary.quantity")}: {combinationCount}
-          </p>
-          <p className="text-xs text-rose-400">{validationMessage}</p>
+        <div className="grid gap-4 md:grid-cols-2">
+          {game.modes.map((option) => {
+            const active = option.id === mode.id;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setModeId(option.id)}
+                className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-left transition duration-300 ${
+                  active ? "text-white" : "text-slate-200 hover:text-white"
+                }`}
+              >
+                <span
+                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br from-fuchsia-500/25 via-transparent to-cyan-500/25 opacity-0 transition duration-300 ${
+                    active ? "opacity-90" : "group-hover:opacity-60"
+                  }`}
+                />
+                <span className="relative z-10 text-sm font-semibold">
+                  {t(option.labelKey)}
+                </span>
+                <span className="relative z-10 mt-1 block text-xs text-slate-400">
+                  {t(option.helperKey)}
+                </span>
+              </button>
+            );
+          })}
         </div>
-      </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
-        {game.modes.map((option) => {
-          const active = option.id === mode.id;
-          return (
+        <div className="space-y-8">
+          {game.pools.map((pool) => (
+            <NumberGrid
+              key={pool.id}
+              pool={pool}
+              selected={selections[pool.id] ?? []}
+              onToggle={(value) => handleToggle(pool.id, value)}
+              requirement={mode.poolRequirements[pool.id]}
+            />
+          ))}
+        </div>
+
+        <div className="flex justify-end">
+          {combinationCount > 0 && (
             <button
-              key={option.id}
               type="button"
-              onClick={() => setModeId(option.id)}
-              className={`flex h-full flex-col items-start rounded-2xl border px-4 py-3 text-left transition ${
-                active
-                  ? "border-indigo-400 bg-indigo-500/10 text-white"
-                  : "border-white/10 bg-white/5 text-slate-200 hover:border-indigo-300/70 hover:bg-indigo-500/5"
-              }`}
+              onClick={handleConfirm}
+              disabled={!isValid}
+              className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/10 px-5 py-2 text-sm font-semibold text-white shadow-[0_24px_60px_-30px_rgba(16,185,129,0.9)] transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <span className="text-sm font-semibold">{t(option.labelKey)}</span>
-              <span className="mt-1 text-xs text-slate-400">
-                {t(option.helperKey)}
+              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500/80 via-cyan-500/70 to-fuchsia-500/70 opacity-90 transition duration-300 group-hover:opacity-100" />
+              <span className="relative z-10">
+                {t("purchase.games.confirm")}
               </span>
             </button>
-          );
-        })}
-      </div>
-
-      <div className="mt-8 space-y-8">
-        {game.pools.map((pool) => (
-          <NumberGrid
-            key={pool.id}
-            pool={pool}
-            selected={selections[pool.id] ?? []}
-            onToggle={(value) => handleToggle(pool.id, value)}
-            requirement={mode.poolRequirements[pool.id]}
-          />
-        ))}
-      </div>
-
-      <div className="mt-6 flex justify-end">
-        {combinationCount > 0 && (
-          <button
-            type="button"
-            onClick={handleConfirm}
-            disabled={!isValid}
-            className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {t("purchase.games.confirm")}
-          </button>
-        )}
+          )}
+        </div>
       </div>
     </section>
+  );
+}
+
+function StyleButton({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative overflow-hidden rounded-full px-4 py-2 text-sm font-semibold transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400 ${
+        active ? "text-white" : "text-slate-200 hover:text-white"
+      }`}
+    >
+      <span
+        className={`absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-500/70 via-indigo-500/60 to-cyan-500/60 opacity-0 transition duration-300 ${
+          active ? "opacity-90" : "group-hover:opacity-60"
+        }`}
+      />
+      <span className="relative z-10">{label}</span>
+    </button>
+  );
+}
+
+function GhostButton({
+  children,
+  onClick,
+  variant = "default",
+}: {
+  children: ReactNode;
+  onClick: () => void;
+  variant?: "default" | "subtle";
+}) {
+  const textClass =
+    variant === "subtle" ? "text-slate-300 hover:text-white" : "text-slate-100";
+  const overlayClass = variant === "subtle" ? "bg-white/5" : "bg-white/10";
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative overflow-hidden rounded-full px-4 py-2 text-sm font-semibold transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400 ${textClass}`}
+    >
+      <span
+        className={`absolute inset-0 rounded-full ${overlayClass} opacity-0 transition duration-300 group-hover:opacity-60`}
+      />
+      <span className="relative z-10">{children}</span>
+    </button>
   );
 }
 
@@ -374,10 +425,10 @@ function NumberGrid({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-200">
+        <h3 className="text-sm font-semibold text-white">
           {t(pool.labelKey)}
         </h3>
-        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-300">
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-200">
           {badgeLabel}
         </span>
       </div>
@@ -389,15 +440,22 @@ function NumberGrid({
               key={number}
               type="button"
               onClick={() => onToggle(number)}
-              className={`relative mx-auto flex h-12 w-12 items-center justify-center rounded-full border text-sm font-semibold transition-all duration-200 ease-out sm:h-14 sm:w-14 ${
+              className={`group relative mx-auto flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-slate-900/60 text-sm font-semibold transition duration-200 ease-out sm:h-14 sm:w-14 ${
                 isSelected
-                  ? "scale-105 border-transparent bg-gradient-to-br from-indigo-500 via-indigo-400 to-indigo-600 text-white shadow-lg shadow-indigo-500/40"
-                  : "border-white/10 bg-slate-900/50 text-slate-200 hover:border-white/40 hover:bg-slate-800/60 hover:text-white"
+                  ? "border-transparent text-white shadow-[0_20px_50px_-25px_rgba(124,58,237,0.9)]"
+                  : "text-slate-200 hover:border-white/30 hover:text-white"
               }`}
             >
-              {pool.padTo
-                ? number.toString().padStart(pool.padTo, "0")
-                : number.toString()}
+              <span
+                className={`absolute inset-0 rounded-full bg-gradient-to-br from-fuchsia-500 via-indigo-500 to-cyan-500 opacity-0 transition duration-200 ${
+                  isSelected ? "opacity-100" : "group-hover:opacity-60"
+                }`}
+              />
+              <span className="relative z-10 font-semibold">
+                {pool.padTo
+                  ? number.toString().padStart(pool.padTo, "0")
+                  : number.toString()}
+              </span>
             </button>
           );
         })}

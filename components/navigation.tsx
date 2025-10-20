@@ -14,7 +14,7 @@ export function Navigation() {
   ];
 
   return (
-    <nav className="hidden items-center gap-4 text-sm font-semibold md:flex">
+    <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
       {links.map((link) => {
         const isActive =
           pathname === link.href || pathname?.startsWith(`${link.href}/`);
@@ -23,13 +23,18 @@ export function Navigation() {
           <Link
             key={link.href}
             href={link.href}
-            className={`relative rounded-full px-3 py-1.5 transition ${
+            className={`group relative overflow-hidden rounded-full px-4 py-1.5 transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${
               isActive
-                ? "bg-white text-slate-900 shadow"
-                : "text-slate-200 hover:bg-white/10"
+                ? "text-white shadow-[0_8px_30px_-14px_rgba(56,189,248,0.8)]"
+                : "text-slate-300 hover:text-white"
             }`}
           >
-            {link.label}
+            <span
+              className={`absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-600/60 via-indigo-500/40 to-cyan-500/60 transition duration-300 ${
+                isActive ? "opacity-90" : "opacity-0 group-hover:opacity-70"
+              }`}
+            />
+            <span className="relative z-10">{link.label}</span>
           </Link>
         );
       })}

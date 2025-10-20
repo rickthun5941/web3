@@ -27,31 +27,35 @@ export function WalletButton() {
     return (
       <button
         type="button"
-        className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/10 px-5 py-2 text-sm font-semibold text-white shadow-[0_20px_45px_-20px_rgba(14,165,233,0.85)] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
         onClick={() => open()}
       >
-        {t("wallet.connect")}
+        <span className="absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-600/80 via-indigo-500/80 to-cyan-500/80 opacity-90 transition duration-300 group-hover:opacity-100" />
+        <span className="absolute inset-[-40%] rounded-full bg-gradient-to-r from-white/40 via-transparent to-transparent opacity-0 blur-2xl transition duration-500 group-hover:opacity-60" />
+        <span className="relative z-10">{t("wallet.connect")}</span>
       </button>
     );
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-full border border-zinc-300 bg-white/80 px-4 py-2 text-sm text-zinc-800 shadow-sm backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-100">
-      <div className="flex flex-col text-left">
-        <span className="font-semibold">
+    <div className="group relative flex items-center gap-4 overflow-hidden rounded-full border border-white/10 bg-slate-950/60 px-5 py-2 text-sm text-white shadow-[0_20px_50px_-22px_rgba(124,58,237,0.7)] backdrop-blur-md">
+      <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-fuchsia-600/25 via-indigo-500/20 to-cyan-400/20 opacity-90" />
+      <span className="pointer-events-none absolute inset-[-45%] bg-[radial-gradient(circle,_rgba(255,255,255,0.4)_0%,_transparent_55%)] opacity-0 blur-3xl transition duration-500 group-hover:opacity-60" />
+      <div className="relative flex flex-col text-left">
+        <span className="font-semibold tracking-wide">
           {address.slice(0, 6)}...{address.slice(-4)}
         </span>
-        <span className="text-xs text-zinc-500 dark:text-zinc-400">
-          {chain?.name ?? t("wallet.unknownChain")} •{" "}
-          {formattedBalance ?? "0.0000"} ETH
+        <span className="text-xs text-slate-300">
+          {chain?.name ?? t("wallet.unknownChain")} • {formattedBalance} ETH
         </span>
       </div>
       <button
         type="button"
-        className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        className="relative overflow-hidden rounded-full border border-white/20 px-3 py-1 text-xs font-medium text-white transition duration-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400"
         onClick={() => disconnect()}
       >
-        {t("wallet.disconnect")}
+        <span className="absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-500/60 via-indigo-500/40 to-cyan-400/60 opacity-0 transition duration-300 group-hover:opacity-80" />
+        <span className="relative z-10">{t("wallet.disconnect")}</span>
       </button>
     </div>
   );

@@ -16,6 +16,7 @@ type TranslationDictionary = Record<Locale, Record<string, string>>;
 const translations: TranslationDictionary = {
   en: {
     "site.title": "Web3 Lottery Hub",
+    "site.baseline": "On-chain draws • instant settlement",
     "site.footer.notice":
       "© {year} Web3 Lottery Hub. All rights reserved.",
     "site.footer.configHint":
@@ -367,6 +368,7 @@ const translations: TranslationDictionary = {
   },
   zh: {
     "site.title": "Web3 彩票平台",
+    "site.baseline": "链上开奖 • 即时结算",
     "site.footer.notice": "© {year} Web3 彩票平台。保留所有权利。",
     "site.footer.configHint":
       "上线前请配置 `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`、`NEXT_PUBLIC_RPC_URL` 与 `NEXT_PUBLIC_LOTTERY_CONTRACT_ADDRESS`。",
@@ -695,6 +697,7 @@ const translations: TranslationDictionary = {
   },
   ko: {
     "site.title": "Web3 복권 허브",
+    "site.baseline": "온체인 추첨 • 즉시 정산",
     "site.footer.notice":
       "© {year} Web3 복권 허브. 모든 권리 보유.",
     "site.footer.configHint":

@@ -12,14 +12,19 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const year = new Date().getFullYear();
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
-      <header className="border-b border-white/10 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4 sm:flex-nowrap">
-          <Link
-            href="/dashboard"
-            className="text-lg font-semibold tracking-tight text-white"
-          >
-            {t("site.title")}
+    <div className="relative flex min-h-screen flex-col">
+      <div className="pointer-events-none absolute inset-x-0 top-[-10%] z-0 h-[420px] bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.22),_transparent_65%)] blur-[120px]" />
+      <div className="pointer-events-none absolute inset-y-0 right-[-35%] z-0 w-[60%] bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.18),_transparent_60%)] blur-[100px]" />
+      <header className="relative z-10 border-b border-white/10 bg-slate-950/40">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(124,58,237,0.16),rgba(15,23,42,0.2),rgba(56,189,248,0.12))] opacity-70" />
+        <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5 sm:flex-nowrap">
+          <Link href="/dashboard" className="group inline-flex flex-col">
+            <span className="gradient-text text-lg font-semibold tracking-tight drop-shadow">
+              {t("site.title")}
+            </span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-slate-400 transition group-hover:text-slate-200">
+              {t("site.baseline")}
+            </span>
           </Link>
           <div className="flex flex-1 flex-wrap items-center justify-end gap-4 md:flex-initial">
             <Navigation />
@@ -30,11 +35,12 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">
+      <main className="relative z-10 mx-auto w-full max-w-6xl flex-1 px-6 py-12">
         {children}
       </main>
-      <footer className="border-t border-white/10 py-12">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 text-sm text-slate-300 md:flex-row md:justify-between">
+      <footer className="relative z-10 border-t border-white/10 py-14">
+        <div className="pointer-events-none absolute inset-x-0 bottom-[-20%] h-80 bg-[radial-gradient(circle_at_bottom,_rgba(59,130,246,0.2),_transparent_70%)] blur-[120px]" />
+        <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 text-sm text-slate-300 md:flex-row md:justify-between">
           <div className="flex flex-col items-start gap-6">
             <div className="flex items-center gap-6 text-white">
               <SocialIcon ariaLabel={t("footer.social.github")} href="https://github.com">
@@ -53,7 +59,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
             </div>
           </div>
 
-          <div className="grid flex-1 gap-10 text-sm text-slate-200 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid flex-1 gap-x-16 gap-y-10 text-sm text-slate-200 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <FooterColumn
               heading={t("footer.columns.products")}
               links={[
@@ -104,9 +110,11 @@ function SocialIcon({
     <Link
       href={href}
       aria-label={ariaLabel}
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-fuchsia-400 hover:text-fuchsia-300"
+      className="group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-slate-950/50 text-white transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-500"
     >
-      {children}
+      <span className="absolute inset-0 rounded-full bg-gradient-to-br from-fuchsia-500/40 via-indigo-500/30 to-cyan-500/40 opacity-0 transition duration-300 group-hover:opacity-80" />
+      <span className="absolute inset-[-40%] rounded-full bg-white/30 opacity-0 blur-2xl transition duration-500 group-hover:opacity-40" />
+      <span className="relative z-10">{children}</span>
     </Link>
   );
 }
@@ -119,8 +127,8 @@ function FooterColumn({
   links: { label: string; href: string }[];
 }) {
   return (
-    <div className="space-y-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+    <div className="min-w-[14rem] space-y-4">
+      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-slate-400">
         {heading}
       </p>
       <ul className="space-y-2 text-sm">

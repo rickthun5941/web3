@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ComponentProps } from "react";
 import { useAccount } from "wagmi";
 import { useSearchParams } from "next/navigation";
 import { ethers } from "ethers";
@@ -233,16 +234,33 @@ export default function PurchasePage() {
 
   return (
     <section className="space-y-10">
-      <header className="space-y-3">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {t("purchase.title")}
-        </h1>
-        <p className="max-w-2xl text-sm text-slate-300">
-          {t("purchase.description")}
-        </p>
-        <p className="text-xs text-slate-500">
-          {t("purchase.network")}: {chain?.name ?? t("wallet.unknownChain")}
-        </p>
+      <header className="space-y-6">
+        <div className="glow-card overflow-hidden px-8 py-9 lg:px-10">
+          <div className="pointer-events-none absolute -left-28 top-[-110px] h-72 w-72 rounded-full bg-fuchsia-500/25 blur-3xl" />
+          <div className="pointer-events-none absolute -right-32 bottom-[-120px] h-80 w-80 rounded-full bg-cyan-500/20 blur-3xl" />
+          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-4">
+              <span className="accent-pill">
+                <PurchaseIcon className="h-3 w-3 text-white/80" />
+                {t("nav.purchase")}
+              </span>
+              <h1 className="text-3xl font-semibold text-white md:text-4xl">
+                <span className="gradient-text">{t("purchase.title")}</span>
+              </h1>
+              <p className="max-w-2xl text-sm text-slate-300/90 md:text-base">
+                {t("purchase.description")}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-xs text-slate-300 shadow-[0_18px_40px_-24px_rgba(14,165,233,0.6)]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">
+                {t("purchase.network")}
+              </p>
+              <p className="mt-3 font-mono text-sm text-white">
+                {chain?.name ?? t("wallet.unknownChain")}
+              </p>
+            </div>
+          </div>
+        </div>
       </header>
 
       <CurrencyConverter />
@@ -260,25 +278,25 @@ export default function PurchasePage() {
 
       <form
         onSubmit={handleSubmit}
-        className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur"
+        className="glow-card space-y-6 overflow-hidden p-6 sm:p-8"
       >
         <div className="grid gap-6 md:grid-cols-2">
-          <label className="space-y-2 text-sm font-medium text-slate-200">
+          <label className="space-y-3 text-sm font-semibold text-slate-100">
             {t("purchase.form.lotteryId.label")}
             <input
               type="number"
               min={0}
               value={lotteryId}
               onChange={(event) => setLotteryId(event.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-slate-950/70 px-3 py-2 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
+              className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white shadow-[0_16px_45px_-32px_rgba(124,58,237,0.7)] focus:border-fuchsia-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/40"
               placeholder={t("purchase.form.lotteryId.placeholder")}
               required
             />
           </label>
 
-          <div className="space-y-2 text-sm font-medium text-slate-200">
+          <div className="space-y-3 text-sm font-semibold text-slate-100">
             {t("purchase.summary.quantity")}
-            <div className="rounded-lg border border-white/10 bg-slate-950/70 px-3 py-2 text-sm text-white">
+            <div className="rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white">
               {totalCombinations}
             </div>
           </div>
@@ -316,18 +334,22 @@ export default function PurchasePage() {
             type="button"
             onClick={handleClearAllBatches}
             disabled={batches.length === 0}
-            className="inline-flex items-center justify-center rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-semibold text-indigo-100 transition hover:border-indigo-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300 disabled:cursor-not-allowed disabled:opacity-60"
+            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold text-slate-200 transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {t("purchase.preview.clearAll")}
+            <span className="absolute inset-0 rounded-full bg-white/5 opacity-0 transition duration-300 group-hover:opacity-50" />
+            <span className="relative z-10">{t("purchase.preview.clearAll")}</span>
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/10 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_24px_60px_-30px_rgba(16,185,129,0.9)] transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting
-              ? t("purchase.form.submitting")
-              : t("purchase.form.submit")}
+            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500/80 via-cyan-500/70 to-fuchsia-500/70 opacity-90 transition duration-300 group-hover:opacity-100" />
+            <span className="relative z-10">
+              {isSubmitting
+                ? t("purchase.form.submitting")
+                : t("purchase.form.submit")}
+            </span>
           </button>
         </div>
 
@@ -337,7 +359,7 @@ export default function PurchasePage() {
 
         {feedback && (
           <div
-            className="rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-4 py-3 text-sm text-indigo-100"
+            className="rounded-2xl border border-fuchsia-500/30 bg-fuchsia-500/10 px-4 py-3 text-sm text-fuchsia-100 shadow-[0_16px_40px_-28px_rgba(232,121,249,0.6)]"
             role="status"
           >
             {feedback}
@@ -350,9 +372,13 @@ export default function PurchasePage() {
 
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-slate-950/50 p-4 text-sm">
-      <p className="text-xs uppercase text-slate-400">{label}</p>
-      <p className="mt-2 text-lg font-semibold text-white">{value}</p>
+    <div className="glow-card overflow-hidden p-4 text-sm">
+      <div className="relative z-10 space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">
+          {label}
+        </p>
+        <p className="text-lg font-semibold text-white">{value}</p>
+      </div>
     </div>
   );
 }
@@ -397,60 +423,62 @@ function GameSelector({
   };
 
   return (
-    <div className="space-y-2" ref={containerRef}>
-      <label className="text-xs font-semibold uppercase text-slate-400">
-        {t("purchase.games.selectorTitle")}
-      </label>
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => setIsOpen((previous) => !previous)}
-          className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-left text-sm font-semibold text-slate-100 transition hover:border-indigo-400/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-        >
-          <span>
-            {selectedGame
-              ? t(selectedGame.nameKey)
-              : t("purchase.games.selectorPlaceholder")}
-          </span>
-          <span className="text-xs text-slate-400">
-            {isOpen ? "▲" : "▼"}
-          </span>
-        </button>
-
-        {isOpen && (
-          <ul
-            role="listbox"
-            className="absolute left-0 right-0 z-20 mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-slate-950/95 shadow-xl backdrop-blur"
+    <div className="glow-card overflow-hidden p-5" ref={containerRef}>
+      <div className="relative z-10 space-y-4">
+        <label className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+          {t("purchase.games.selectorTitle")}
+        </label>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setIsOpen((previous) => !previous)}
+            className="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-slate-100 transition duration-300 hover:border-fuchsia-400/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400"
+            aria-haspopup="listbox"
+            aria-expanded={isOpen}
           >
-            {games.map((game) => {
-              const active = game.id === selectedGameId;
-              return (
-                <li key={game.id}>
-                  <button
-                    type="button"
-                    onClick={() => handleSelect(game.id)}
-                    role="option"
-                    aria-selected={active}
-                    className={`flex w-full items-center justify-between px-4 py-3 text-sm transition ${
-                      active
-                        ? "bg-indigo-500/30 text-indigo-100"
-                        : "text-slate-200 hover:bg-white/10 hover:text-white"
-                    }`}
-                  >
-                    <span>{t(game.nameKey)}</span>
-                    {active && (
-                      <span className="text-xs uppercase text-indigo-200">
-                        {t("purchase.games.selected")}
-                      </span>
-                    )}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+            <span>
+              {selectedGame
+                ? t(selectedGame.nameKey)
+                : t("purchase.games.selectorPlaceholder")}
+            </span>
+            <span className="text-xs text-slate-400">
+              {isOpen ? "▲" : "▼"}
+            </span>
+          </button>
+
+          {isOpen && (
+            <ul
+              role="listbox"
+              className="absolute left-0 right-0 z-20 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur"
+            >
+              {games.map((game) => {
+                const active = game.id === selectedGameId;
+                return (
+                  <li key={game.id}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelect(game.id)}
+                      role="option"
+                      aria-selected={active}
+                      className={`flex w-full items-center justify-between px-4 py-3 text-sm transition duration-200 ${
+                        active
+                          ? "rounded-xl bg-fuchsia-500/20 text-fuchsia-100"
+                          : "text-slate-200 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      <span>{t(game.nameKey)}</span>
+                      {active && (
+                        <span className="text-xs uppercase text-fuchsia-200">
+                          {t("purchase.games.selected")}
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -472,8 +500,8 @@ function TicketPreview({
   }
 
   return (
-    <div className="space-y-4 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 text-sm text-slate-200">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="glow-card space-y-4 overflow-hidden p-5 text-sm text-slate-200">
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-white">
           {t("purchase.games.preview.title")}
         </h3>
@@ -481,11 +509,11 @@ function TicketPreview({
           {t("purchase.games.totalTickets", { count: total })}
         </span>
       </div>
-      <p className="text-xs text-slate-400">
+      <p className="relative z-10 text-xs text-slate-400">
         {t("purchase.games.preview.description")}
       </p>
 
-      <div className="space-y-4">
+      <div className="relative z-10 space-y-4">
         {batches.map((batch, index) => {
           const game = LOTTERY_GAME_MAP[batch.gameId];
           if (!game) {
@@ -498,9 +526,9 @@ function TicketPreview({
           return (
             <div
               key={batch.id}
-              className="rounded-2xl border border-white/10 bg-white/5 p-4"
+              className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4"
             >
-              <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm font-semibold text-white">
                     {t("purchase.preview.groupLabel", { index: index + 1 })}
@@ -517,9 +545,12 @@ function TicketPreview({
                 <button
                   type="button"
                   onClick={() => onRemove(batch.id)}
-                  className="rounded-full border border-indigo-400/40 px-3 py-1 text-xs font-semibold text-indigo-100 transition hover:border-indigo-300 hover:text-white"
+                  className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/15 px-3 py-1 text-xs font-semibold text-slate-100 transition duration-300 hover:text-white"
                 >
-                  {t("purchase.preview.remove")}
+                  <span className="absolute inset-0 rounded-full bg-white/10 opacity-0 transition duration-300 group-hover:opacity-60" />
+                  <span className="relative z-10">
+                    {t("purchase.preview.remove")}
+                  </span>
                 </button>
               </div>
 
@@ -539,14 +570,14 @@ function TicketPreview({
 
               {batch.preview.length > 0 && (
                 <>
-                  <p className="mt-3 text-[11px] uppercase tracking-wide text-slate-500">
+                  <p className="mt-3 text-[11px] uppercase tracking-[0.24em] text-slate-500">
                     {t("purchase.preview.samples")}
                   </p>
                   <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                     {batch.preview.map((ticket) => (
                       <div
                         key={ticket.id}
-                        className="space-y-2 rounded-lg border border-indigo-400/40 bg-indigo-500/10 px-3 py-2 font-mono text-xs text-indigo-100"
+                        className="space-y-2 rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 font-mono text-xs text-indigo-100"
                       >
                         <div className="text-indigo-200">{ticket.id}</div>
                         {game.pools.map((pool) => (
@@ -682,4 +713,33 @@ function normalizeSelections(
 
 function formatNumbers(numbers: number[], padTo = 2) {
   return numbers.map((number) => number.toString().padStart(padTo, "0")).join(" ");
+}
+
+function PurchaseIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
+      <rect
+        x={2.5}
+        y={6}
+        width={19}
+        height={12}
+        rx={2.5}
+        stroke="currentColor"
+        strokeWidth={1.5}
+      />
+      <path
+        d="M2.5 10h19"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+      />
+      <path
+        d="M8.5 14h3"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+      />
+      <circle cx={17.5} cy={14} r={1.5} fill="currentColor" />
+    </svg>
+  );
 }
