@@ -17,8 +17,6 @@ type DashboardStats = {
   totalSold: string;
 };
 
-type DashboardStatus = "loading" | "ready" | "fallback";
-
 const fallbackStats: DashboardStats = {
   jackpot: "25.4",
   ticketPrice: SINGLE_TICKET_USD_FORMATTED,
@@ -27,7 +25,9 @@ const fallbackStats: DashboardStats = {
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>(fallbackStats);
-  const [status, setStatus] = useState<DashboardStatus>("loading");
+  const [status, setStatus] = useState<"loading" | "ready" | "fallback">(
+    "loading"
+  );
   const { t } = useTranslation();
 
   const featureCards: FeatureCardConfig[] = [
@@ -75,25 +75,6 @@ export default function DashboardPage() {
     },
   ];
 
-  const statusStyles: Record<DashboardStatus, string> = {
-    ready: "bg-emerald-500/15 text-emerald-200 shadow-[0_0_0_1px_rgba(16,185,129,0.25)]",
-    loading: "bg-amber-500/15 text-amber-200 shadow-[0_0_0_1px_rgba(251,191,36,0.28)]",
-    fallback: "bg-slate-500/15 text-slate-300 shadow-[0_0_0_1px_rgba(148,163,184,0.18)]",
-  };
-
-  const statusDotClasses: Record<DashboardStatus, string> = {
-    ready: "bg-emerald-400 shadow-[0_0_16px_rgba(16,185,129,0.7)]",
-    loading: "bg-amber-300 animate-pulse shadow-[0_0_16px_rgba(251,191,36,0.6)]",
-    fallback: "bg-slate-400",
-  };
-
-  const statusLabel =
-    status === "ready"
-      ? t("dashboard.status.live")
-      : status === "loading"
-        ? t("dashboard.status.loading")
-        : t("dashboard.status.fallback");
-
   useEffect(() => {
     let cancelled = false;
 
@@ -138,39 +119,45 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <section className="space-y-12">
-      <header className="space-y-6">
-        <div className="glow-card overflow-hidden px-8 py-10 lg:px-12">
-          <div className="pointer-events-none absolute -left-28 top-[-140px] h-72 w-72 rounded-full bg-fuchsia-500/35 blur-3xl" />
-          <div className="pointer-events-none absolute -right-32 bottom-[-140px] h-80 w-80 rounded-full bg-cyan-500/25 blur-3xl" />
-          <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-6">
-              <span className="accent-pill">
-                <SparkIcon className="h-3 w-3 text-white/80" />
-                {t("dashboard.hero.heading")}
-              </span>
-              <h1 className="text-4xl font-semibold text-white md:text-5xl">
-                <span className="gradient-text">{t("dashboard.title")}</span>
-              </h1>
-              <p className="max-w-2xl text-sm text-slate-200/90 md:text-base">
-                {t("dashboard.hero.body")}
-              </p>
-            </div>
-            <div className="flex flex-col items-start gap-4">
-              <span
-                className={`inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] transition duration-300 ${statusStyles[status]}`}
-              >
-                <span
-                  className={`h-2.5 w-2.5 rounded-full ${statusDotClasses[status]}`}
-                />
-                {statusLabel}
-              </span>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-xs text-slate-300 shadow-[0_18px_40px_-24px_rgba(59,130,246,0.6)]">
-                <p>{t("dashboard.description")}</p>
-              </div>
-            </div>
+    <section className="space-y-10">
+      <header className="space-y-3">
+        <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-slate-950/80 p-8 shadow-[0_35px_80px_-50px_rgba(0,0,0,0.8)]">
+          <div className="pointer-events-none absolute -left-24 top-[-90px] h-56 w-56 rounded-full bg-fuchsia-500/25 blur-3xl" />
+          <div className="pointer-events-none absolute -right-20 bottom-[-80px] h-60 w-60 rounded-full bg-indigo-500/20 blur-3xl" />
+          <div className="relative z-10 space-y-4">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-200">
+              <SparkIcon className="h-3 w-3 text-white/70" />
+              {t("dashboard.hero.heading")}
+            </span>
+            <p className="text-base leading-relaxed text-slate-200 md:text-lg">
+              {t("dashboard.hero.body")}
+            </p>
           </div>
         </div>
+
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            {t("dashboard.title")}
+          </h1>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold uppercase ${
+              status === "ready"
+                ? "bg-emerald-500/10 text-emerald-300"
+                : status === "loading"
+                  ? "bg-amber-500/10 text-amber-300"
+                  : "bg-slate-500/10 text-slate-300"
+            }`}
+          >
+            {status === "ready"
+              ? t("dashboard.status.live")
+              : status === "loading"
+                ? t("dashboard.status.loading")
+                : t("dashboard.status.fallback")}
+          </span>
+        </div>
+        <p className="max-w-2xl text-sm text-slate-300">
+          {t("dashboard.description")}
+        </p>
       </header>
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -194,15 +181,15 @@ export default function DashboardPage() {
         />
       </div>
 
-      <section className="glow-card overflow-hidden px-8 py-10">
-        <div className="pointer-events-none absolute -left-24 top-[-80px] h-56 w-56 rounded-full bg-fuchsia-500/25 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 bottom-[-70px] h-60 w-60 rounded-full bg-sky-500/20 blur-3xl" />
+      <section className="relative overflow-hidden rounded-[30px] border border-white/10 bg-slate-950/70 p-8 shadow-[0_30px_80px_-50px_rgba(0,0,0,0.8)]">
+        <div className="pointer-events-none absolute -left-20 top-[-60px] h-48 w-48 rounded-full bg-fuchsia-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-14 bottom-[-50px] h-56 w-56 rounded-full bg-sky-500/20 blur-3xl" />
         <div className="relative z-10 space-y-8">
           <div className="space-y-3">
-            <h2 className="text-2xl font-semibold text-white md:text-3xl">
+            <h2 className="text-2xl font-semibold text-white">
               {t("dashboard.features.title")}
             </h2>
-            <p className="max-w-2xl text-sm text-slate-300/90 md:text-base">
+            <p className="max-w-2xl text-sm text-slate-300">
               {t("dashboard.features.subtitle")}
             </p>
           </div>
@@ -215,32 +202,29 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <div className="glow-card overflow-hidden p-6 sm:p-8">
-        <div className="pointer-events-none absolute -right-28 top-[-80px] h-56 w-56 rounded-full bg-emerald-500/20 blur-3xl" />
-        <div className="relative z-10 space-y-6">
-          <h2 className="text-xl font-semibold text-white">
-            {t("dashboard.config.title")}
-          </h2>
-          <dl className="grid gap-4 text-sm text-slate-300 sm:grid-cols-2">
-            <div>
-              <dt className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                {t("dashboard.config.contract")}
-              </dt>
-              <dd className="mt-2 break-all font-mono text-xs text-slate-300/80">
-                {LOTTERY_CONTRACT_ADDRESS}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                {t("dashboard.config.provider")}
-              </dt>
-              <dd className="mt-2 text-slate-300/80">
-                {process.env.NEXT_PUBLIC_RPC_URL ??
-                  "https://ethereum-sepolia.publicnode.com"}
-              </dd>
-            </div>
-          </dl>
-        </div>
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur">
+        <h2 className="text-xl font-semibold text-white">
+          {t("dashboard.config.title")}
+        </h2>
+        <dl className="mt-4 grid gap-4 text-sm text-slate-300 sm:grid-cols-2">
+          <div>
+            <dt className="font-medium text-slate-200">
+              {t("dashboard.config.contract")}
+            </dt>
+            <dd className="mt-1 break-all font-mono text-xs text-slate-400">
+              {LOTTERY_CONTRACT_ADDRESS}
+            </dd>
+          </div>
+          <div>
+            <dt className="font-medium text-slate-200">
+              {t("dashboard.config.provider")}
+            </dt>
+            <dd className="mt-1 text-slate-400">
+              {process.env.NEXT_PUBLIC_RPC_URL ??
+                "https://ethereum-sepolia.publicnode.com"}
+            </dd>
+          </div>
+        </dl>
       </div>
     </section>
   );
@@ -258,18 +242,12 @@ type StatCardProps = {
 
 function StatCard({ title, value, helper, accent }: StatCardProps) {
   return (
-    <div className="glow-card overflow-hidden p-6">
-      <div
-        className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${accent} opacity-60`}
-      />
-      <div className="relative z-10 space-y-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-300">
-          {title}
-        </p>
-        <p className="text-4xl font-semibold text-white">{value}</p>
-        <div className="nebula-divider" />
-        <p className="text-xs text-slate-400">{helper}</p>
-      </div>
+    <div
+      className={`relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/60 p-6 shadow-md before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-br ${accent}`}
+    >
+      <p className="text-xs uppercase text-slate-400">{title}</p>
+      <p className="mt-3 text-3xl font-semibold text-white">{value}</p>
+      <p className="mt-2 text-xs text-slate-400">{helper}</p>
     </div>
   );
 }
@@ -284,24 +262,20 @@ type FeatureCardConfig = {
 
 function FeatureCard({ badge, title, description, accent, icon }: FeatureCardConfig) {
   return (
-    <div className="glow-card overflow-hidden p-6">
-      <div
-        className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${accent} opacity-60`}
-      />
-      <div className="relative z-10 flex flex-col gap-6">
-        <div className="flex items-center justify-between gap-3">
-          <span className="accent-pill">
-            <SparkIcon className="h-3 w-3 text-white/80" />
-            {badge}
-          </span>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white/80 shadow-inner">
-            {icon}
-          </div>
+    <div
+      className={`relative overflow-hidden rounded-[26px] border border-white/10 bg-black/60 p-6 shadow-[0_25px_60px_-35px_rgba(0,0,0,0.8)] before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-br ${accent}`}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <span className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-slate-200">
+          <SparkIcon className="h-3 w-3 text-white/80" />
+          {badge}
+        </span>
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-white/80">
+          {icon}
         </div>
-        <h3 className="text-xl font-semibold text-white">{title}</h3>
-        <div className="nebula-divider" />
-        <p className="text-sm leading-relaxed text-slate-300">{description}</p>
       </div>
+      <h3 className="mt-6 text-xl font-semibold text-white">{title}</h3>
+      <p className="mt-3 text-sm leading-relaxed text-slate-300">{description}</p>
     </div>
   );
 }

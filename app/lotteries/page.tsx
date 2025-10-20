@@ -13,7 +13,8 @@ import { useTranslation } from "@/lib/i18n";
 
 type Lottery = {
   id: number;
-  title: string;
+  title?: string;
+  titleKey?: string;
   jackpot: string;
   ticketPrice: string;
   closesAt: string;
@@ -22,21 +23,21 @@ type Lottery = {
 const fallbackLotteries: Lottery[] = [
   {
     id: 1,
-    title: "Mega Weekly Draw",
+    titleKey: "lotteries.fallback.megaWeekly",
     jackpot: "12.8",
     ticketPrice: "0.05",
     closesAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2).toISOString(),
   },
   {
     id: 2,
-    title: "Community Raffle",
+    titleKey: "lotteries.fallback.communityRaffle",
     jackpot: "3.1",
     ticketPrice: "0.01",
     closesAt: new Date(Date.now() + 1000 * 60 * 60 * 12).toISOString(),
   },
   {
     id: 3,
-    title: "High Roller Flash Pot",
+    titleKey: "lotteries.fallback.highRoller",
     jackpot: "45.0",
     ticketPrice: "0.25",
     closesAt: new Date(Date.now() + 1000 * 60 * 60 * 6).toISOString(),
@@ -155,7 +156,7 @@ export default function LotteriesPage() {
                   </span>
                 </div>
                 <h2 className="text-xl font-semibold text-white">
-                  {lottery.title}
+                  {lottery.titleKey ? t(lottery.titleKey) : lottery.title}
                 </h2>
                 <div className="nebula-divider" />
                 <dl className="grid gap-3 text-sm text-slate-300 sm:grid-cols-2">

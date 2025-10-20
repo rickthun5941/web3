@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "@/lib/i18n";
 import {
@@ -113,6 +113,86 @@ export function LotteryPicker({ game, onConfirm, onChange }: LotteryPickerProps)
   const [modeId, setModeId] = useState(game.defaultModeId);
   const [style, setStyle] = useState<SelectionStyle>("manual");
   const [selections, setSelections] = useState<LotterySelection>({});
+  const [displaySelections, setDisplaySelections] = useState<LotterySelection>({});
+  const [isAnimating, setIsAnimating] = useState(false);
+  const animationTimeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearRevealAnimation = useCallback(() => {
+    animationTimeouts.current.forEach((timeoutId) => {
+      clearTimeout(timeoutId);
+    });
+    animationTimeouts.current = [];
+    setIsAnimating(false);
+  }, []);
+
+  const cloneSelectionForDisplay = useCallback(
+    (source: LotterySelection): LotterySelection => {
+      const clone: LotterySelection = {};
+      for (const pool of game.pools) {
+        const values = source[pool.id];
+        if (values && values.length > 0) {
+          clone[pool.id] = [...values];
+        }
+      }
+      return clone;
+    },
+    [game.pools]
+  );
+
+  const animateToSelections = useCallback(
+    (target: LotterySelection) => {
+      clearRevealAnimation();
+      setSelections(target);
+      const base: LotterySelection = {};
+      for (const pool of game.pools) {
+        base[pool.id] = [];
+      }
+      setDisplaySelections(base);
+
+      const entries: Array<{ poolId: string; value: number }> = [];
+      for (const pool of game.pools) {
+        const sortedValues = [...(target[pool.id] ?? [])].sort(
+          (a, b) => a - b
+        );
+        for (const value of sortedValues) {
+          entries.push({ poolId: pool.id, value });
+        }
+      }
+
+      if (entries.length === 0) {
+        setDisplaySelections(cloneSelectionForDisplay(target));
+        setIsAnimating(false);
+        return;
+      }
+
+      setIsAnimating(true);
+
+      entries.forEach((entry, index) => {
+        const timeoutId = setTimeout(() => {
+          setDisplaySelections((previous) => {
+            const next = { ...previous };
+            const existing = next[entry.poolId]
+              ? [...next[entry.poolId]]
+              : [];
+            if (!existing.includes(entry.value)) {
+              existing.push(entry.value);
+              existing.sort((a, b) => a - b);
+            }
+            next[entry.poolId] = existing;
+            return next;
+          });
+        }, index * 140);
+        animationTimeouts.current.push(timeoutId);
+      });
+
+      const finalTimeout = setTimeout(() => {
+        setDisplaySelections(cloneSelectionForDisplay(target));
+        setIsAnimating(false);
+      }, entries.length * 140 + 140);
+      animationTimeouts.current.push(finalTimeout);
+    },
+    [clearRevealAnimation, cloneSelectionForDisplay, game.pools]
+  );
 
   const mode = useMemo(() => getMode(game, modeId), [game, modeId]);
 
@@ -147,16 +227,32 @@ export function LotteryPicker({ game, onConfirm, onChange }: LotteryPickerProps)
   const isValid = !validationMessage && combinationCount > 0;
 
   useEffect(() => {
+    clearRevealAnimation();
     setModeId(game.defaultModeId);
     setSelections({});
+    setDisplaySelections({});
     setStyle("manual");
-  }, [game]);
+  }, [game, clearRevealAnimation]);
 
   useEffect(() => {
     if (style === "random") {
-      setSelections(generateRandomSelection(game, mode));
+      animateToSelections(generateRandomSelection(game, mode));
+      return () => {
+        clearRevealAnimation();
+      };
     }
-  }, [style, game, mode]);
+
+    clearRevealAnimation();
+    return () => {
+      clearRevealAnimation();
+    };
+  }, [style, game, mode, animateToSelections, clearRevealAnimation]);
+
+  useEffect(() => {
+    if (style === "manual" && !isAnimating) {
+      setDisplaySelections(cloneSelectionForDisplay(selections));
+    }
+  }, [selections, style, isAnimating, cloneSelectionForDisplay]);
 
   useEffect(() => {
     onChange?.({
@@ -180,30 +276,35 @@ export function LotteryPicker({ game, onConfirm, onChange }: LotteryPickerProps)
   const handleToggle = useCallback(
     (poolId: string, value: number) => {
       if (style === "random") return;
+      clearRevealAnimation();
       setSelections((previous) => {
         const current = previous[poolId] ?? [];
-        if (current.includes(value)) {
-          return {
-            ...previous,
-            [poolId]: current.filter((item) => item !== value),
-          };
+        const nextValues = current.includes(value)
+          ? current.filter((item) => item !== value)
+          : [...current, value].sort((a, b) => a - b);
+
+        const nextSelection: LotterySelection = { ...previous };
+        if (nextValues.length > 0) {
+          nextSelection[poolId] = nextValues;
+        } else {
+          delete nextSelection[poolId];
         }
-        return {
-          ...previous,
-          [poolId]: [...current, value].sort((a, b) => a - b),
-        };
+        setDisplaySelections(nextSelection);
+        return nextSelection;
       });
     },
-    [style]
+    [style, clearRevealAnimation]
   );
 
   const handleRandomize = useCallback(() => {
-    setSelections(generateRandomSelection(game, mode));
-  }, [game, mode]);
+    animateToSelections(generateRandomSelection(game, mode));
+  }, [animateToSelections, game, mode]);
 
   const handleClear = useCallback(() => {
+    clearRevealAnimation();
     setSelections({});
-  }, []);
+    setDisplaySelections({});
+  }, [clearRevealAnimation]);
 
   const handleConfirm = useCallback(() => {
     if (!isValid) return;
@@ -314,7 +415,7 @@ export function LotteryPicker({ game, onConfirm, onChange }: LotteryPickerProps)
             <NumberGrid
               key={pool.id}
               pool={pool}
-              selected={selections[pool.id] ?? []}
+              selected={displaySelections[pool.id] ?? []}
               onToggle={(value) => handleToggle(pool.id, value)}
               requirement={mode.poolRequirements[pool.id]}
             />

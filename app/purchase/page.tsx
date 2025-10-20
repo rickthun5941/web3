@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ComponentProps } from "react";
 import { useAccount } from "wagmi";
 import { useSearchParams } from "next/navigation";
@@ -399,120 +399,280 @@ function GameSelector({
     "from-amber-500/30 via-orange-500/20 to-rose-500/20",
     "from-blue-500/30 via-indigo-500/20 to-purple-500/20",
   ];
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const [scrollIndicator, setScrollIndicator] = useState({
+    top: 0,
+    height: 100,
+    visible: false,
+  });
 
   const selectedGame = useMemo(
     () => games.find((game) => game.id === selectedGameId) ?? null,
     [games, selectedGameId]
   );
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleClick = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClick);
+      document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const element = listRef.current;
+    if (!isOpen || !element) {
+      setScrollIndicator((previous) => ({ ...previous, visible: false }));
+      return;
+    }
+
+    function updateIndicator() {
+      const { scrollTop, scrollHeight, clientHeight } = element;
+      const canScroll = scrollHeight > clientHeight + 1;
+      if (!canScroll) {
+        setScrollIndicator({ top: 0, height: 100, visible: false });
+        return;
+      }
+
+      const heightPercent = Math.max((clientHeight / scrollHeight) * 100, 15);
+      const maxTravel = 100 - heightPercent;
+      const ratio =
+        scrollHeight - clientHeight <= 0
+          ? 0
+          : scrollTop / (scrollHeight - clientHeight);
+      const topPercent = ratio * maxTravel;
+      setScrollIndicator({
+        top: topPercent,
+        height: heightPercent,
+        visible: true,
+      });
+    }
+
+    updateIndicator();
+    element.addEventListener("scroll", updateIndicator);
+    window.addEventListener("resize", updateIndicator);
+
+    return () => {
+      element.removeEventListener("scroll", updateIndicator);
+      window.removeEventListener("resize", updateIndicator);
+    };
+  }, [isOpen, games.length]);
+
+  const summaryGame = selectedGame ?? games[0];
+
   return (
-    <div className="glow-card flex h-full flex-col gap-5 p-5">
-      <div className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-400">
-          {t("purchase.games.selectorTitle")}
-        </p>
-        <p className="text-xs text-slate-400">
-          {selectedGame
-            ? t(selectedGame.descriptionKey)
-            : t("purchase.games.selectorPlaceholder")}
-        </p>
-      </div>
-      <div className="relative flex-1">
-        <div className="pointer-events-none absolute inset-0 rounded-3xl border border-white/5" />
-        <ul className="scrollbar-glass relative flex max-h-[420px] flex-col gap-3 overflow-y-auto pr-1">
-          {games.map((game, index) => {
-            const isActive = game.id === selectedGameId;
-            const accent = accentGradients[index % accentGradients.length];
-            return (
-              <li key={game.id}>
-                <button
-                  type="button"
-                  onClick={() => onSelect(game.id)}
-                  aria-pressed={isActive}
-                  className={`group relative w-full overflow-hidden rounded-2xl border px-4 py-4 text-left transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400 ${
-                    isActive
-                      ? "border-white/30 text-white shadow-[0_24px_60px_-32px_rgba(167,139,250,0.6)]"
-                      : "border-white/10 text-slate-200 hover:border-fuchsia-400/60 hover:text-white hover:shadow-[0_24px_60px_-40px_rgba(124,58,237,0.55)]"
-                  }`}
+    <div ref={containerRef} className={`relative ${isOpen ? "z-40" : ""}`}>
+      <div className="glow-card flex flex-col gap-5 p-5">
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-400">
+            {t("purchase.games.selectorTitle")}
+          </p>
+          <p className="text-xs text-slate-400">
+            {summaryGame
+              ? t(summaryGame.descriptionKey)
+              : t("purchase.games.selectorPlaceholder")}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsOpen((previous) => !previous)}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          className="group relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border border-white/15 bg-white/5 px-5 py-4 text-left text-slate-200 transition duration-300 hover:border-fuchsia-400/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-slate-200">
+                  {summaryGame?.ticketPrefix ?? "—"}
+                </span>
+                {selectedGame ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-200">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                    {t("purchase.games.selected")}
+                  </span>
+                ) : null}
+              </div>
+              <p className="text-lg font-semibold text-white">
+                {summaryGame ? t(summaryGame.nameKey) : t("purchase.games.selectorPlaceholder")}
+              </p>
+              <p className="text-xs text-slate-300">
+                {summaryGame ? t(summaryGame.hintKey) : ""}
+              </p>
+            </div>
+            <ChevronIcon
+              className={`h-5 w-5 text-white/60 transition-transform duration-300 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+          {summaryGame ? (
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em]">
+              {summaryGame.modes.slice(0, 3).map((mode) => (
+                <span
+                  key={mode.id}
+                  className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-white/80"
                 >
-                  <span
-                    className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-0 transition duration-300 ${
-                      isActive ? "opacity-80" : "group-hover:opacity-60"
-                    }`}
-                  />
-                  <span className="absolute right-4 top-4 h-2 w-2 rounded-full bg-white/40 shadow-[0_0_12px_rgba(255,255,255,0.4)] group-hover:scale-110 group-hover:bg-white/70" />
-                  <div className="relative z-10 flex items-start justify-between gap-3">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center rounded-full border border-white/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.28em] text-slate-200">
-                          {game.ticketPrefix}
-                        </span>
-                        {isActive ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-200">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
-                            {t("purchase.games.selected")}
-                          </span>
-                        ) : null}
-                      </div>
-                      <p className="text-base font-semibold leading-tight text-white">
-                        {t(game.nameKey)}
-                      </p>
-                      <p
-                        className="text-xs text-slate-200/80 max-w-[16rem]"
-                        style={{
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                        }}
-                      >
-                        {t(game.hintKey)}
-                      </p>
-                    </div>
-                    <ChevronIcon
-                      className={`h-4 w-4 text-white/40 transition duration-300 ${isActive ? "translate-x-0 opacity-100" : "translate-x-1 opacity-40 group-hover:translate-x-0 group-hover:opacity-100"}`}
-                    />
-                  </div>
-                  <div className="relative z-10 mt-4 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em]">
-                    {game.modes.slice(0, 3).map((mode) => (
-                      <span
-                        key={mode.id}
-                        className={`rounded-full border border-white/15 px-3 py-1 text-slate-200 ${
-                          isActive ? "bg-white/10 text-white" : "bg-white/5"
-                        }`}
-                      >
-                        {t(mode.labelKey)}
-                      </span>
-                    ))}
-                    {game.modes.length > 3 ? (
-                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-slate-200">
-                        +{game.modes.length - 3}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="relative z-10 mt-4 flex flex-wrap gap-3 text-[10px] font-mono text-slate-300">
-                    {game.pools.map((pool) => (
-                      <span
-                        key={pool.id}
-                        className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-2 py-1 text-slate-200/80"
-                      >
-                        <span className="uppercase tracking-[0.18em] text-slate-400">
-                          {t(pool.labelKey)}
-                        </span>
-                        <span>
-                          {pool.start}
-                          {" – "}
-                          {pool.end}
-                        </span>
-                      </span>
-                    ))}
-                  </div>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                  {t(mode.labelKey)}
+                </span>
+              ))}
+              {summaryGame.modes.length > 3 ? (
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-slate-200">
+                  +{summaryGame.modes.length - 3}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </button>
       </div>
+
+      {isOpen && (
+        <div className="absolute left-0 top-full mt-3 w-full rounded-3xl border border-white/10 bg-slate-950/95 p-4 shadow-2xl backdrop-blur">
+          <div className="relative">
+            <ul
+              ref={listRef}
+              className="no-scrollbar flex max-h-[420px] flex-col gap-3 overflow-y-auto pr-2"
+              role="listbox"
+            >
+              {games.map((game, index) => {
+                const isActive = game.id === selectedGameId;
+                const accent = accentGradients[index % accentGradients.length];
+                return (
+                  <li key={game.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSelect(game.id);
+                      setIsOpen(false);
+                    }}
+                    role="option"
+                    aria-selected={isActive}
+                    className={`group relative w-full overflow-hidden rounded-2xl border px-4 py-4 text-left transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400 ${
+                      isActive
+                        ? "border-white/30 text-white shadow-[0_24px_60px_-32px_rgba(167,139,250,0.6)]"
+                        : "border-white/10 text-slate-200 hover:border-fuchsia-400/60 hover:text-white hover:shadow-[0_24px_60px_-40px_rgba(124,58,237,0.55)]"
+                    }`}
+                  >
+                    <span
+                      className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-0 transition duration-300 ${
+                        isActive ? "opacity-80" : "group-hover:opacity-60"
+                      }`}
+                    />
+                    <span className="absolute right-4 top-4 h-2 w-2 rounded-full bg-white/40 shadow-[0_0_12px_rgba(255,255,255,0.4)] group-hover:scale-110 group-hover:bg-white/70" />
+                    <div className="relative z-10 flex items-start justify-between gap-3">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center rounded-full border border-white/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.28em] text-slate-200">
+                            {game.ticketPrefix}
+                          </span>
+                          {isActive ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-200">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                              {t("purchase.games.selected")}
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="text-base font-semibold leading-tight text-white">
+                          {t(game.nameKey)}
+                        </p>
+                        <p
+                          className="text-xs text-slate-200/80 max-w-[16rem]"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {t(game.hintKey)}
+                        </p>
+                      </div>
+                      <ChevronIcon
+                        className={`h-4 w-4 text-white/40 transition duration-300 ${
+                          isActive
+                            ? "translate-x-0 opacity-100"
+                            : "translate-x-1 opacity-40 group-hover:translate-x-0 group-hover:opacity-100"
+                        }`}
+                      />
+                    </div>
+                    <div className="relative z-10 mt-4 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em]">
+                      {game.modes.slice(0, 3).map((mode) => (
+                        <span
+                          key={mode.id}
+                          className={`rounded-full border border-white/15 px-3 py-1 text-slate-200 ${
+                            isActive ? "bg-white/10 text-white" : "bg-white/5"
+                          }`}
+                        >
+                          {t(mode.labelKey)}
+                        </span>
+                      ))}
+                      {game.modes.length > 3 ? (
+                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-slate-200">
+                          +{game.modes.length - 3}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="relative z-10 mt-4 flex flex-wrap gap-3 text-[10px] font-mono text-slate-300">
+                      {game.pools.map((pool) => (
+                        <span
+                          key={pool.id}
+                          className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-2 py-1 text-slate-200/80"
+                        >
+                          <span className="uppercase tracking-[0.18em] text-slate-400">
+                            {t(pool.labelKey)}
+                          </span>
+                          <span>
+                            {pool.start}
+                            {" – "}
+                            {pool.end}
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </button>
+                  </li>
+                );
+              })}
+            </ul>
+            {scrollIndicator.visible ? (
+              <div className="pointer-events-none absolute right-0 top-0 flex h-full w-[10px] items-start justify-center">
+                <div className="h-full w-[2px] rounded-full bg-gradient-to-b from-white/10 via-indigo-400/30 to-white/10" />
+                <div
+                  className="absolute right-[2px] w-[6px] rounded-full bg-gradient-to-b from-fuchsia-400 via-indigo-400 to-cyan-400 shadow-[0_8px_18px_-10px_rgba(79,70,229,0.8)]"
+                  style={{
+                    height: `${scrollIndicator.height}%`,
+                    top: `${scrollIndicator.top}%`,
+                  }}
+                />
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

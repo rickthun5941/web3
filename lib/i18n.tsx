@@ -114,6 +114,9 @@ const translations: TranslationDictionary = {
     "lotteries.card.ticketPrice": "Ticket price",
     "lotteries.card.closes": "Closes",
     "lotteries.card.button": "Purchase Tickets",
+    "lotteries.fallback.megaWeekly": "Mega Weekly Draw",
+    "lotteries.fallback.communityRaffle": "Community Raffle",
+    "lotteries.fallback.highRoller": "High Roller Flash Pot",
     "purchase.title": "Purchase Tickets",
     "purchase.description":
       "Submit buy orders directly to the lottery contract using your connected wallet. Double-check the target lottery ID, ticket quantity, and total cost before signing.",
@@ -463,6 +466,9 @@ const translations: TranslationDictionary = {
     "lotteries.card.ticketPrice": "票价",
     "lotteries.card.closes": "截止时间",
     "lotteries.card.button": "立即购票",
+    "lotteries.fallback.megaWeekly": "每周巨奖",
+    "lotteries.fallback.communityRaffle": "社区抽奖",
+    "lotteries.fallback.highRoller": "高额闪电奖池",
     "purchase.title": "购买彩票",
     "purchase.description":
       "使用已连接的钱包直接向彩票合约提交购买请求。签名前请确认彩票 ID、购票数量与总花费。",
@@ -798,6 +804,9 @@ const translations: TranslationDictionary = {
     "lotteries.card.ticketPrice": "티켓 가격",
     "lotteries.card.closes": "종료",
     "lotteries.card.button": "티켓 구매",
+    "lotteries.fallback.megaWeekly": "메가 주간 드로우",
+    "lotteries.fallback.communityRaffle": "커뮤니티 래플",
+    "lotteries.fallback.highRoller": "하이롤러 플래시 팟",
     "purchase.title": "티켓 구매",
     "purchase.description":
       "연결된 지갑으로 복권 컨트랙트에 직접 구매 주문을 제출하세요. 서명 전에 복권 ID, 수량, 총 비용을 확인하세요.",

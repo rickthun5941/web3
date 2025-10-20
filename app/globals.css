@@ -163,4 +163,13 @@ body::after {
   .scrollbar-glass::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, rgba(129, 140, 248, 0.95), rgba(236, 72, 153, 0.85));
   }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
