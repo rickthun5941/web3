@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useTranslation } from "@/lib/i18n";
@@ -13,6 +14,18 @@ export function WalletButton() {
   const { isConnected, address, chain } = useAccount();
   const { disconnect } = useDisconnect();
   const { t } = useTranslation();
+
+  const handleOpenAccount = useCallback(() => {
+    open({ view: "Account" });
+  }, [open]);
+
+  const handleDisconnect = useCallback(() => {
+    disconnect();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("wagmi.store");
+      localStorage.removeItem("wagmi.walletconnect");
+    }
+  }, [disconnect]);
 
   const { data: balance } = useBalance({
     address,
@@ -49,14 +62,24 @@ export function WalletButton() {
           {chain?.name ?? t("wallet.unknownChain")} • {formattedBalance} ETH
         </span>
       </div>
-      <button
-        type="button"
-        className="relative overflow-hidden rounded-full border border-white/20 px-3 py-1 text-xs font-medium text-white transition duration-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400"
-        onClick={() => disconnect()}
-      >
-        <span className="absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-500/60 via-indigo-500/40 to-cyan-400/60 opacity-0 transition duration-300 group-hover:opacity-80" />
-        <span className="relative z-10">{t("wallet.disconnect")}</span>
-      </button>
+      <div className="relative z-10 flex items-center gap-3">
+        <button
+          type="button"
+          className="relative overflow-hidden rounded-full border border-white/20 px-3 py-1 text-xs font-medium text-white transition duration-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
+          onClick={handleOpenAccount}
+        >
+          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/60 via-indigo-500/40 to-fuchsia-500/60 opacity-0 transition duration-300 group-hover:opacity-80" />
+          <span className="relative z-10">{t("wallet.manage")}</span>
+        </button>
+        <button
+          type="button"
+          className="relative overflow-hidden rounded-full border border-white/20 px-3 py-1 text-xs font-medium text-white transition duration-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-400"
+          onClick={handleDisconnect}
+        >
+          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-500/60 via-indigo-500/40 to-cyan-400/60 opacity-0 transition duration-300 group-hover:opacity-80" />
+          <span className="relative z-10">{t("wallet.disconnect")}</span>
+        </button>
+      </div>
     </div>
   );
 }

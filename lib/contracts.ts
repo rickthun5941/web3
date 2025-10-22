@@ -3,7 +3,7 @@ import type { AddressLike } from "ethers";
 
 export const LOTTERY_CONTRACT_ADDRESS =
   (process.env.NEXT_PUBLIC_LOTTERY_CONTRACT_ADDRESS as AddressLike | undefined) ??
-  "0x0000000000000000000000000000000000000000";
+  "0xd307291F7ADE8813a825f2291a5AD6B22EBC5E0f";
 
 export const lotteryAbi = [
   "function jackpot() view returns (uint256)",

@@ -121,6 +121,7 @@ const translations: TranslationDictionary = {
     "purchase.description":
       "Submit buy orders directly to the lottery contract using your connected wallet. Double-check the target lottery ID, ticket quantity, and total cost before signing.",
     "purchase.network": "Connected network",
+    "purchase.networkDisconnected": "Wallet not connected",
     "purchase.form.lotteryId.label": "Lottery ID",
     "purchase.form.lotteryId.placeholder":
       "Enter the on-chain lottery identifier",
@@ -147,7 +148,12 @@ const translations: TranslationDictionary = {
       "Success! Tickets purchased and recorded on-chain.",
     "purchase.feedback.txFailed":
       "Purchase failed: {message}",
+    "purchase.feedback.unsupportedChain":
+      "Unsupported network: you are connected to {network}. Switch to {supported} and reconnect.",
+    "purchase.feedback.insufficientBalance":
+      "Insufficient balance: {required} ETH required but only {available} ETH available.",
     "wallet.connect": "Connect Wallet",
+    "wallet.manage": "Manage",
     "wallet.disconnect": "Disconnect",
     "wallet.unknownChain": "Unknown",
     "purchase.games.selectionStyle": "Selection style",
@@ -473,6 +479,7 @@ const translations: TranslationDictionary = {
     "purchase.description":
       "使用已连接的钱包直接向彩票合约提交购买请求。签名前请确认彩票 ID、购票数量与总花费。",
     "purchase.network": "当前网络",
+    "purchase.networkDisconnected": "未连接钱包",
     "purchase.form.lotteryId.label": "彩票 ID",
     "purchase.form.lotteryId.placeholder": "填写链上彩票编号",
     "purchase.form.quantity.label": "购票数量",
@@ -492,7 +499,12 @@ const translations: TranslationDictionary = {
     "purchase.feedback.txPending": "交易已提交，等待链上确认…",
     "purchase.feedback.txSuccess": "购票成功，交易已在链上记录。",
     "purchase.feedback.txFailed": "购票失败：{message}",
+    "purchase.feedback.unsupportedChain":
+      "当前连接的网络为 {network}，不受支持。请切换到 {supported} 网络后重试。",
+    "purchase.feedback.insufficientBalance":
+      "余额不足：需要 {required} ETH，但当前仅有 {available} ETH。",
     "wallet.connect": "连接钱包",
+    "wallet.manage": "管理",
     "wallet.disconnect": "断开连接",
     "wallet.unknownChain": "未知网络",
     "purchase.games.selectionStyle": "选号方式",
@@ -811,6 +823,7 @@ const translations: TranslationDictionary = {
     "purchase.description":
       "연결된 지갑으로 복권 컨트랙트에 직접 구매 주문을 제출하세요. 서명 전에 복권 ID, 수량, 총 비용을 확인하세요.",
     "purchase.network": "연결된 네트워크",
+    "purchase.networkDisconnected": "지갑이 연결되어 있지 않습니다",
     "purchase.form.lotteryId.label": "복권 ID",
     "purchase.form.lotteryId.placeholder": "온체인 복권 번호를 입력하세요",
     "purchase.form.quantity.label": "티켓 수량",
@@ -836,7 +849,12 @@ const translations: TranslationDictionary = {
       "구매 완료! 거래가 온체인에 기록되었습니다.",
     "purchase.feedback.txFailed":
       "구매 실패: {message}",
+    "purchase.feedback.unsupportedChain":
+      "지원되지 않는 네트워크입니다. 현재 {network} 네트워크에 연결되어 있습니다. {supported} 중 하나로 전환한 뒤 다시 시도하세요.",
+    "purchase.feedback.insufficientBalance":
+      "잔액이 부족합니다. 필요한 금액은 {required} ETH이지만 현재 잔액은 {available} ETH입니다.",
     "wallet.connect": "지갑 연결",
+    "wallet.manage": "관리",
     "wallet.disconnect": "연결 해제",
     "wallet.unknownChain": "알 수 없음",
     "purchase.games.selectionStyle": "번호 선택 방식",

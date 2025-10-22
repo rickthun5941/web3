@@ -11,6 +11,7 @@ import {
 } from "@/lib/contracts";
 import { getReadonlyProvider, getSigner } from "@/lib/providers";
 import { useTranslation } from "@/lib/i18n";
+import { chains } from "@/lib/web3modal";
 import { CurrencyConverter } from "@/components/currency-converter";
 import {
   LotteryPicker,
@@ -47,11 +48,14 @@ const PREVIEW_LIMIT_PER_BATCH = 12;
 const DEFAULT_GAME_ID =
   (LOTTERY_GAMES[0]?.id as LotteryGameId | undefined) ?? "lottoMax";
 
+const SUPPORTED_CHAIN_IDS = new Set(chains.map((item) => item.id));
+const SUPPORTED_NETWORKS_LABEL = chains.map((item) => item.name).join(", ");
+
 export default function PurchasePage() {
   const searchParams = useSearchParams();
   const defaultLotteryId = searchParams?.get("lotteryId") ?? "";
 
-  const { isConnected, chain } = useAccount();
+  const { isConnected, chain, address } = useAccount();
   const { t } = useTranslation();
 
   const [lotteryId, setLotteryId] = useState(defaultLotteryId);
@@ -76,6 +80,13 @@ export default function PurchasePage() {
     if (totalCombinations <= 0) return "0.00";
     return (totalCombinations * SINGLE_TICKET_USD).toFixed(2);
   }, [totalCombinations]);
+
+  const networkDisplayLabel = useMemo(() => {
+    if (!isConnected || !chain) {
+      return t("purchase.networkDisconnected");
+    }
+    return chain.name ?? t("wallet.unknownChain");
+  }, [chain, isConnected, t]);
 
   const handleSelectionConfirm = useCallback(
     (payload: LotteryConfirmPayload) => {
@@ -205,12 +216,50 @@ export default function PurchasePage() {
       return;
     }
 
+    if (!address) {
+      setFeedback(t("purchase.feedback.connectWallet"));
+      return;
+    }
+
+    const totalCost = ticketPriceWei * BigInt(totalCombinations);
+
+    if (!chain || !SUPPORTED_CHAIN_IDS.has(chain.id)) {
+      const networkName = chain?.name ?? t("wallet.unknownChain");
+      setFeedback(
+        t("purchase.feedback.unsupportedChain", {
+          network: networkName,
+          supported: SUPPORTED_NETWORKS_LABEL,
+        })
+      );
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       const signer = await getSigner();
+      const signerAddress = await signer.getAddress();
+
+      if (signer.provider) {
+        const balance = await signer.provider.getBalance(signerAddress);
+        if (balance < totalCost) {
+          const requiredEth = Number.parseFloat(
+            ethers.formatEther(totalCost)
+          );
+          const availableEth = Number.parseFloat(
+            ethers.formatEther(balance)
+          );
+          setFeedback(
+            t("purchase.feedback.insufficientBalance", {
+              required: requiredEth.toFixed(4),
+              available: availableEth.toFixed(4),
+            })
+          );
+          return;
+        }
+      }
+
       const contract = getLotteryContract(signer);
 
-      const totalCost = ticketPriceWei * BigInt(totalCombinations);
       const tx = await contract.buyTickets(
         parsedLotteryId,
         totalCombinations,
@@ -256,7 +305,7 @@ export default function PurchasePage() {
                 {t("purchase.network")}
               </p>
               <p className="mt-3 font-mono text-sm text-white">
-                {chain?.name ?? t("wallet.unknownChain")}
+                {networkDisplayLabel}
               </p>
             </div>
           </div>
